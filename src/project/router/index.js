@@ -54,17 +54,18 @@ router.beforeEach((to,from,next) => {
    * @date 2020/3/24
   */
   let user = localStorage.getItem('userCache');
-  if (user) {
-    next();
-  } else {
-    if (to.path === '/login' ||  to.path === '/'){
-      next();
-    } else {
-      next({path:'/login'});
-      loading.close()
-    }
+  // if (user) {
+  //   next();
+  // } else {
+  //   if (to.path === '/login' ||  to.path === '/'){
+  //     next();
+  //   } else {
+  //     next({path:'/login'});
+  //     loading.close()
+  //   }
 
-  }
+  // }
+  next();
 
 });
 
