@@ -40,7 +40,7 @@
         <!-- 用户名 -->
         <el-dropdown @command="handleClick" v-if="$route.path !== '/login'">
           <span class="el-dropdown-link" style="font-size: 12px">
-            {{ store.user.nickname || "管理员" }}
+            {{ store.user.username || "管理员" }}
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item icon="el-icon-edit" command="editPsd"
@@ -97,6 +97,10 @@
 </template>
 
 <script>
+const GETACCOUNT_URL = "account/getAccount";
+  import {post} from "@/framework/http/request";
+  import {getAccount} from '@/framework/layout/header';
+  // import {search, count, del, enable, disable} from '@/project/service/user'
 export default {
   name: "layout-header",
   data() {
@@ -124,6 +128,7 @@ export default {
       // breadcrumbList:[]
       selectValue: "",
       language: "中文",
+      username:"",
       options: [
         {
           value: "zh",
@@ -142,6 +147,9 @@ export default {
       ruleForm: {
         pass: "",
         checkPass: ""
+      },
+      myUser: {
+
       }
     };
   },
@@ -150,8 +158,22 @@ export default {
       return this.$route.meta.breadcrumb;
     },
     store() {
-      return this.$store.state;
-    }
+      // console.log('ssass')
+      // return this.$store.state;
+          let _t = this;
+          let user = null;
+          var params = new URLSearchParams();
+          // console.log(_t.$store.state.user.id);
+          params.append("id", _t.$store.state.user.id);
+          getAccount(params, res => {
+               user = res;
+              _t.$store.state.user.username = user.username;
+              console.log('sswwaa')
+          });
+        return _t.$store.state;
+    },
+
+
   },
   methods: {
     langChange(e) {
@@ -197,9 +219,10 @@ export default {
     }
   },
   created() {
+
     // this.breadcrumbList = this.$route.meta.breadcrumb;
     this.selectValue = localStorage.getItem("name_language") || "zh";
-  }
+  },
 };
 </script>
 

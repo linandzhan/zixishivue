@@ -25,23 +25,33 @@ instance.interceptors.request.use(
   //   return request;
   // },
   config => {
-    console.log(store.state.user.token)
-    // if token exist, add Access-Token to request header
-    if (store.state.user.token) {
-      config.headers['Access-Token'] = store.state.user.token;
-      config.headers['id'] = store.state.user.id;
-    } else {
-      let result = store.dispatch("GET_USER_EXIST");
-      result.then((flag) => {
-        if (flag) {
-          store.dispatch("GET_USER_CACHE");
-          if (store.state.user.token) {
-            config.headers['Access-Token'] = store.state.user.token;
-            config.headers['id'] = store.state.user.id;
-          }
+    if(window.localStorage) {
+      let ls = window.localStorage;
+      let userStr = ls.getItem("userCache");
+      if(userStr) {
+        let user = JSON.parse(userStr);
+        if (user.token) {
+          config.headers['authorization'] = user.token;
         }
-      })
+      }
+ 
     }
+
+    // console.log(user);
+    // console.log(store.state.user.token)
+    // if token exist, add Access-Token to request header
+// else {
+//       // let result = store.dispatch("GET_USER_EXIST");
+//       // result.then((flag) => {
+//       //   if (flag) {
+//       //     store.dispatch("GET_USER_CACHE");
+//       //     if (store.state.user.token) {
+//       //       config.headers['authorization'] = store.state.user.token;
+//       //       config.headers['id'] = store.state.user.id;
+//       //     }
+//       //   }
+//       // })
+//     }
     // change data to formData
     // let keys = Object.keys(config.data);
     // let formData = new FormData();
@@ -67,16 +77,18 @@ instance.interceptors.request.use(
 // response interceptors response data format {code: 200, data: {}} or {code: 400, message: "error"}
 instance.interceptors.response.use(
   response => {
+    console.log(response);
     let res = response.data;
     let code = res.code;
     if (code) {
-      if (res.code === 200) {
+      if (code === 200) {
+        console.log('登录成功啦')
         let data = res.data;
         if (data === undefined || data === '' || data === null) {
           data = 0
         }
         return data
-      } else if (res.code === 401) {
+      } else if (code === 401) {
         // handle token is expired
         router.push("/login")
       } else {
