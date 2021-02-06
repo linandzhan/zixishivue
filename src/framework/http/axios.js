@@ -28,13 +28,14 @@ instance.interceptors.request.use(
     if(window.localStorage) {
       let ls = window.localStorage;
       let userStr = ls.getItem("userCache");
+      // console.log(userStr);
+      // console.log('sdawwww')
       if(userStr) {
         let user = JSON.parse(userStr);
         if (user.token) {
           config.headers['authorization'] = user.token;
         }
       }
- 
     }
 
     // console.log(user);

@@ -1,10 +1,18 @@
 <template>
   <el-header
-    style="z-index:2;position:fixed;top: 0;width:100%;display: flex;padding: 0;height: 48px"
+    style="
+      z-index: 2;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      display: flex;
+      padding: 0;
+      height: 48px;
+    "
   >
     <div class="sider-logo">{{ $t("message.projectName") }}</div>
     <div class="head-setting">
-      <div style="display: flex;align-items: center">
+      <div style="display: flex; align-items: center">
         <el-page-header @back="goBack" v-if="$route.meta.isShowBack">
         </el-page-header>
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -16,7 +24,7 @@
           </el-breadcrumb-item>
         </el-breadcrumb>
       </div>
-      <div style="display: flex; align-items:center;">
+      <div style="display: flex; align-items: center">
         <!--        选择国际化语言-->
         <el-select
           v-model="selectValue"
@@ -33,13 +41,13 @@
         </el-select>
 
         <!-- 用户头像 -->
-         <span class="user-avator" v-if="$route.path !== '/login'">
+        <span class="user-avator" v-if="$route.path !== '/login'">
           <img src="../../assets/img/img.jpg" />
-         </span>
+        </span>
 
         <!-- 用户名 -->
         <el-dropdown @command="handleClick" v-if="$route.path !== '/login'">
-          <span class="el-dropdown-link" style="font-size: 12px">
+          <span class="el-dropdown-link" style="font-size: 12px" id="username">
             {{ store.user.username || "管理员" }}
           </span>
           <el-dropdown-menu slot="dropdown">
@@ -51,7 +59,6 @@
             >
           </el-dropdown-menu>
         </el-dropdown>
-
 
         <el-dialog
           title="修改密码"
@@ -98,9 +105,9 @@
 
 <script>
 const GETACCOUNT_URL = "account/getAccount";
-  import {post} from "@/framework/http/request";
-  import {getAccount} from '@/framework/layout/header';
-  // import {search, count, del, enable, disable} from '@/project/service/user'
+import { post } from "@/framework/http/request";
+import { getAccount } from "@/framework/layout/header";
+// import {search, count, del, enable, disable} from '@/project/service/user'
 export default {
   name: "layout-header",
   data() {
@@ -128,29 +135,27 @@ export default {
       // breadcrumbList:[]
       selectValue: "",
       language: "中文",
-      username:"",
+      username: "",
       options: [
         {
           value: "zh",
-          label: "中文"
+          label: "中文",
         },
         {
           value: "en",
-          label: "English"
-        }
+          label: "English",
+        },
       ],
       dialogVisible: false,
       rules: {
         pass: [{ validator: validatePass, trigger: "blur" }],
-        checkPass: [{ validator: validatePass2, trigger: "blur" }]
+        checkPass: [{ validator: validatePass2, trigger: "blur" }],
       },
       ruleForm: {
         pass: "",
-        checkPass: ""
+        checkPass: "",
       },
-      myUser: {
-
-      }
+      myUser: {},
     };
   },
   computed: {
@@ -158,22 +163,10 @@ export default {
       return this.$route.meta.breadcrumb;
     },
     store() {
-      // console.log('ssass')
-      // return this.$store.state;
-          let _t = this;
-          let user = null;
-          var params = new URLSearchParams();
-          // console.log(_t.$store.state.user.id);
-          params.append("id", _t.$store.state.user.id);
-          getAccount(params, res => {
-               user = res;
-              _t.$store.state.user.username = user.username;
-              console.log('sswwaa')
-          });
-        return _t.$store.state;
+      let _t = this;
+
+      return _t.$store.state;
     },
-
-
   },
   methods: {
     langChange(e) {
@@ -190,15 +183,15 @@ export default {
           this.dialogVisible = true;
           break;
         case "logout":
-          this.$post("api/manager/logout", {}, res => {
+          this.$post("api/manager/logout", {}, (res) => {
             this.$message({
               message: "退出成功",
-              type: "success"
+              type: "success",
             });
           });
           this.$store.dispatch("CLEAR_USER_CACHE");
           this.$store.commit("SAVE_ITEM", {
-            user: ""
+            user: "",
           });
           this.$router.replace({ path: "/login" });
           break;
@@ -208,7 +201,7 @@ export default {
       this.dialogVisible = false;
     },
     handleConfirm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           alert("submit!");
         } else {
@@ -216,10 +209,27 @@ export default {
           return false;
         }
       });
-    }
+    },
+    getUser() {
+      if (window.localStorage) {
+        let _t = this;
+        let ls = window.localStorage;
+        let userStr = ls.getItem("userCache");
+        let user = JSON.parse(userStr);
+        var span = document.getElementById("username");
+
+        if (!_t.$store.state.user.username) {
+           span.innerHTML = user.username;
+        }
+       
+        // _t.myUser.username = userStr.username;
+      }
+    },
+  },
+  mounted() {
+    this.getUser();
   },
   created() {
-
     // this.breadcrumbList = this.$route.meta.breadcrumb;
     this.selectValue = localStorage.getItem("name_language") || "zh";
   },
@@ -280,11 +290,11 @@ export default {
   opacity: 0 !important;
 }
 .user-avator {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 .user-avator img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
 }
 </style>

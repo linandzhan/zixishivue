@@ -54,6 +54,7 @@
 const md5 = require("js-md5");
 const LOGIN_URL = "/account/login";
 import { post } from "@/framework/http/request";
+import { getAccount } from "@/framework/layout/header";
 export default {
   name: "Login",
   data() {
@@ -94,15 +95,10 @@ export default {
           params.append("username", _t.formValidate.username);
           params.append("password", _t.formValidate.password);
           post(LOGIN_URL, params, (res) => {
-              let user = res;
-
-            //  console.log(user);
-            // console.log(user.token);
-            // console.log(user.id);
+            let user = res;
             _t.$store.commit("SAVE_USER", {
               user: user,
             });
-
             _t.$store.dispatch("SAVE_USER_CACHE");
             _t.$router.push("/index");
           });
