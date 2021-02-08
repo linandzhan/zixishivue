@@ -94,6 +94,7 @@ export default {
           var params = new URLSearchParams();
           params.append("username", _t.formValidate.username);
           params.append("password", _t.formValidate.password);
+          // params.append("password", "123456");
           post(LOGIN_URL, params, (res) => {
             let user = res;
             _t.$store.commit("SAVE_USER", {

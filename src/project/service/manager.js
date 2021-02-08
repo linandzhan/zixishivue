@@ -2,7 +2,7 @@ import axios from '@/framework/http/axios'
 const model = 'manager';
 let getUrl = `api/${model}/get`;
 // let fingAllPendingStoresUrl = `api/${model}/fingAllPendingStores`;//所有门店
-let searchUrl = `api/${model}/search`;
+let searchUrl = `/${model}/search`;
 let countUrl = `api/${model}/count`;
 let deleteUrl = `api/${model}/delete`;
 let batchDeleteUrl = `api/${model}/delete`;

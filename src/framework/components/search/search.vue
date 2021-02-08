@@ -40,7 +40,7 @@
     computed: {},
     methods: {
       onSearch() {
-        console.log(this.keywords);
+        // console.log(this.keywords);
         this.$emit("on-search", this.keywords); // handle seach
       },
       onReset() {
@@ -53,7 +53,7 @@
       },
       onChange(obj) {
         let value = obj.value;
-        console.log(typeof (value));
+        // console.log(typeof (value));
         if (value === -1 || value === "" || value === undefined) {
           delete this.keywords[obj.key]; // if value is undefined or "" or -1 delete it
         } else  {
