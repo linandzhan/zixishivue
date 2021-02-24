@@ -86,7 +86,7 @@ export default {
     //请求接口路径
     action: {
       type: String,
-      default: 'api/attachment/upload'
+      default: '/attachment/upload'
     }
   },
   data(){

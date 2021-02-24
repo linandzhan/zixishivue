@@ -7,13 +7,13 @@
     :before-close="handleClose">
 
     <el-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-width="150px">
-      <el-form-item label="姓名" prop="realname">
-        <el-input v-model="formValidate.realname" placeholder="输入姓名"></el-input>
+      <el-form-item label="用户名" prop="username">
+        <el-input v-model="formValidate.username" placeholder="输入用户名"></el-input>
       </el-form-item>
       <el-form-item label="头像" v-if="isFinished">
         <upload
           @on-transport-file-list="handleTransportFileList"
-          :file-list="formValidate.avatar ? formValidate.avatar.split(';') : []"
+          :file-list="formValidate.avator ? formValidate.avator.split(';') : []"
           :max-size="5120"
           :limit="1"
         >
@@ -22,13 +22,9 @@
       <el-form-item label="手机号" prop="phone">
         <el-input v-model="formValidate.phone" placeholder="输入手机号"></el-input>
       </el-form-item>
-      <el-form-item label="邮箱" prop="email">
-        <el-input v-model="formValidate.email" placeholder="输入邮箱"></el-input>
+      <el-form-item label="备注" prop="description">
+        <el-input v-model="formValidate.description" placeholder="输入备注"></el-input>
       </el-form-item>
-      <el-form-item label="备注" prop="comment">
-        <el-input v-model="formValidate.comment" placeholder="输入备注"></el-input>
-      </el-form-item>
-
     </el-form>
     <div slot="footer" class="dialog-footer">
 
@@ -40,7 +36,8 @@
 
 <script>
   import Upload from "@/framework/components/upload";
-  import {get,update} from '@/project/service/manager'
+  import {get,update} from '@/project/service/manager';
+  import { post } from "@/framework/http/request";
   import emitter from "@/framework/mixins/emitter"
   export default {
     name: "edit",
@@ -54,7 +51,7 @@
         default: false,
       },
       editId: {
-        type: Number,
+        type: String,
         default: 0
       }
     },
@@ -145,7 +142,7 @@
       },
       get(id) {
         this.isFinished = false;
-        get({id: id}, res => {
+        post('manager/get',{id: id}, res => {
           this.formValidate = res;
           this.isFinished = true;
         });

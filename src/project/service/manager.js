@@ -6,8 +6,8 @@ let searchUrl = `/${model}/search`;
 let countUrl = `api/${model}/count`;
 let deleteUrl = `api/${model}/delete`;
 let batchDeleteUrl = `api/${model}/delete`;
-let enableUrl = `api/${model}/enable`;
-let disableUrl = `api/${model}/disable`;
+let enableUrl = `/${model}/enable`;
+let disableUrl = `/${model}/disable`;
 let saveUrl = `api/${model}/save`;
 let updateUrl = `api/${model}/update`
 

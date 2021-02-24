@@ -42,7 +42,11 @@
 
         <!-- 用户头像 -->
         <span class="user-avator" v-if="$route.path !== '/login'">
-          <img src="../../assets/img/img.jpg" />
+          <img
+            style="width: 40px; height: 40px; border-radius: 40px"
+            :src="$store.state.prefix + manager.avator"
+            @click="imgVisible = true"
+          />
         </span>
 
         <!-- 用户名 -->
@@ -136,6 +140,7 @@ export default {
       selectValue: "",
       language: "中文",
       username: "",
+      manager: {},
       options: [
         {
           value: "zh",
@@ -210,27 +215,34 @@ export default {
         }
       });
     },
+    getManager(_id) {
+      let param = { id: _id.toString() };
+      post("/manager/get", param, (res) => {
+        this.manager = res;
+      });
+    },
     getUser() {
+      console.log('sswwwww')
       if (window.localStorage) {
         let _t = this;
         let ls = window.localStorage;
         let userStr = ls.getItem("userCache");
         let user = JSON.parse(userStr);
+        this.getManager(user.id);
         var span = document.getElementById("username");
-
         if (!_t.$store.state.user.username) {
-           span.innerHTML = user.username;
+          span.innerHTML = user.username;
         }
-       
-        // _t.myUser.username = userStr.username;
       }
     },
   },
   mounted() {
+    // this.getUser();
     this.getUser();
   },
   created() {
     // this.breadcrumbList = this.$route.meta.breadcrumb;
+
     this.selectValue = localStorage.getItem("name_language") || "zh";
   },
 };

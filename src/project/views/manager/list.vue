@@ -123,8 +123,10 @@
           </template>
         </el-table-column>
         <el-table-column prop="phone" label="手机号"> </el-table-column>
-        <el-table-column prop="createAt" label="创建时间" sortable>
+        <el-table-column prop="createTime" label="创建时间" sortable>
         </el-table-column>
+        <!-- <el-table-column prop="role" label="角色" sortable>
+        </el-table-column> -->
         <el-table-column prop="enabled" label="状态"> </el-table-column>
         <el-table-column fixed="right" align="center" label="操作" width="200">
           <template slot-scope="scope">
@@ -132,9 +134,7 @@
               @click.stop="handleStatusChange(scope.row)"
               type="text"
               size="small"
-              >{{
-                scope.row.status.indexOf("启用") >= 0 ? "禁用" : "启用"
-              }}</el-button
+              >{{ scope.row.enabled == "启用" ? "禁用" : "启用" }}</el-button
             >
           </template>
         </el-table-column>
@@ -228,7 +228,7 @@ export default {
     handleStatusChange(row) {
       let enabled;
       let _t = this;
-      if (row.enabled.indexOf("启用") >= 0) {
+      if (row.enabled == "启用") {
         enabled = "禁用";
       } else {
         enabled = "启用";
@@ -239,8 +239,10 @@ export default {
         type: "warning",
       })
         .then(() => {
-          if (status === "禁用") {
-            disable({ id: row.id }, (res) => {
+          if (enabled === "禁用") {
+            var params = new URLSearchParams();
+            params.append("id", row.id);
+            disable(params, (res) => {
               _t.$message({
                 type: "success",
                 message: "已禁用!",
@@ -248,7 +250,9 @@ export default {
               _t.search(_t.page);
             });
           } else {
-            enable({ id: row.id }, (res) => {
+            var params = new URLSearchParams();
+            params.append("id", row.id);
+            enable(params, (res) => {
               _t.$message({
                 type: "success",
                 message: "已启用!",
@@ -260,7 +264,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消删除",
+            message: "已取消操作",
           });
         });
     },
@@ -271,24 +275,24 @@ export default {
     handlePageChange(page) {
       this.search(page);
     },
-    handleSortChange(sort) {
-      let key = sort.key;
-      let order = sort.order;
-      let asc = this.sort.asc;
-      let desc = this.sort.desc;
-      if (asc.indexOf(key) > -1) {
-        let idx = asc.indexOf(key);
-        asc.splice(idx, 1);
-      }
-      if (desc.indexOf(key) > -1) {
-        let idx = desc.indexOf(key);
-        desc.splice(idx, 1);
-      }
-      if (order !== "normal") {
-        this.sort[order].push(key);
-      }
-      this.search(1);
-    },
+    // handleSortChange(sort) {
+    //   let key = sort.key;
+    //   let order = sort.order;
+    //   let asc = this.sort.asc;
+    //   let desc = this.sort.desc;
+    //   if (asc.indexOf(key) > -1) {
+    //     let idx = asc.indexOf(key);
+    //     asc.splice(idx, 1);
+    //   }
+    //   if (desc.indexOf(key) > -1) {
+    //     let idx = desc.indexOf(key);
+    //     desc.splice(idx, 1);
+    //   }
+    //   if (order !== "normal") {
+    //     this.sort[order].push(key);
+    //   }
+    //   this.search(1);
+    // },
     searchBySearchItem(searchItems) {
       // console.log('seww')
       console.log(searchItems);
@@ -360,21 +364,33 @@ export default {
         delete param.pageable.sort;
       }
       console.log(param.manager);
-      var params = new URLSearchParams();
-      // params.append("manager",param.manager );
-      params.append("roleId", "ssww");
-      post(SEARCH_URL,param, (res) => {
-        let data = res;
+      // var params = new URLSearchParams();
+      // // params.append("manager",param.manager );
+      // params.append("roleId", "ssww");
+      post(SEARCH_URL, param, (res) => {
+        let data = res.items;
         _t.data = data;
-        _t.getTotal();
+        _t.total = res.total;
+        _t.setEnabled();
       });
     },
-    getTotal() {
-      let _t = this;
-      let param = { [this.model]: _t.extraParam };
-      count(param, (res) => {
-        _t.total = parseInt(res);
-      });
+    // getTotal() {
+    //   let _t = this;
+    //   let param = { [this.model]: _t.extraParam };
+    //   count(param, (res) => {
+    //     _t.total = parseInt(res);
+    //   });
+    // },
+    setEnabled() {
+      let data = this.data;
+      for (let i in data) {
+        if (data[i].enabled) {
+          // console.log("sdww11");
+          data[i].enabled = "启用";
+        } else {
+          data[i].enabled = "禁用";
+        }
+      }
     },
     handleTransportSelectList(list) {
       this.selectList = list;
@@ -417,22 +433,27 @@ export default {
     batchEnable() {
       let _t = this;
       let selectList = this.selectList;
+      // console.log(selectList);
+      // console.log('swww')
       this.$confirm("确定启用所选的记录吗?", "启用提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
+          let idList = [];
           selectList.map((s) => {
-            enable({ id: s.id }, (res) => {
-              _t.search(_t.page);
-              // this.$message({
-              //   type: 'success',
-              //   message: '删除成功!'
-              // });
+            idList.push(s.id);
+          });
+          post("manager/batchEnabled", idList, (res) => {
+            _t.search(_t.page);
+            this.$message({
+              type: "success",
+              message: "批量启用成功!",
             });
           });
         })
+
         .catch(() => {
           this.$message({
             type: "info",
@@ -450,13 +471,15 @@ export default {
         type: "warning",
       })
         .then(() => {
+          let idList = [];
           selectList.map((s) => {
-            disable({ id: s.id }, (res) => {
-              _t.search(_t.page);
-              // this.$message({
-              //   type: 'success',
-              //   message: '删除成功!'
-              // });
+            idList.push(s.id);
+          });
+          post("manager/batchDisabled", idList, (res) => {
+            _t.search(_t.page);
+            this.$message({
+              type: "success",
+              message: "批量禁用成功!",
             });
           });
         })

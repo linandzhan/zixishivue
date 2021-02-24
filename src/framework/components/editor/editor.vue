@@ -115,7 +115,7 @@ export default {
       let file = ev.target.files[0];
       let param = new FormData();
       param.append('file',file);
-      post('api/attachment/upload',param,res => {
+      post('/attachment/upload',param,res => {
         let url = this.$store.state.prefix + res;
         this.content = this.$refs.myQuillEditor.quill.getSelection();
         // 调用编辑器的 insertEmbed 方法，插入URL

@@ -83,7 +83,7 @@ instance.interceptors.response.use(
     let code = res.code;
     if (code) {
       if (code === 200) {
-        console.log('登录成功啦')
+        // console.log('登录成功啦')
         let data = res.data;
         if (data === undefined || data === '' || data === null) {
           data = 0
@@ -96,7 +96,7 @@ instance.interceptors.response.use(
         // handle code is not 200
         Notification({
           title: '警告',
-          message: `${res.message}`,
+          message: `${res.msg}`,
           type: 'warning'
         })
       }

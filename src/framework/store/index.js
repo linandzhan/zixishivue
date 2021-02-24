@@ -13,7 +13,7 @@ const initPageState = () => {
       token: "",
       username: ""
     },
-    prefix:'http://47.107.184.144/attachment/',
+    prefix:'http://localhost:8888/attachment/',
   };
 };
 const store = new Vuex.Store({
