@@ -83,7 +83,7 @@ export function disable(param, callback) {
 }
 
 export function addRole(param, callback) {
-  axios.post(`api/${model}/addRole`, param).then(data => {
+  axios.post(`/${model}/addRole`, param).then(data => {
     if (data !== undefined && data !== '' && data !== null) {
       // callback when data is exist
       callback(data)

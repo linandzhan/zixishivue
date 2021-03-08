@@ -52,7 +52,7 @@
         </div>
       </el-card>
     </el-col>
-    <!-- <el-col :span="18">
+    <el-col :span="18">
       <el-card class="box-card-large">
         <el-tabs v-model="activeName">
           <el-tab-pane label="角色设置" name="first">
@@ -91,7 +91,7 @@
 
         </el-tabs>
       </el-card>
-    </el-col> -->
+    </el-col>
 
     <i-edit
       :dialog-visible="editProps.visible"
@@ -101,7 +101,7 @@
 
     <preview-img
       :img-visible="imgVisible"
-      :img-url="manager.avatar"
+      :img-url="manager.avator"
       @on-preview-cancal="handleClose"
     >
     </preview-img>
@@ -145,6 +145,9 @@
         <el-button type="info" @click="handleClose">取 消</el-button>
       </div>
     </el-dialog>
+
+
+
     <el-dialog
       title="添加角色"
       :visible.sync="roleVisible"
@@ -172,8 +175,8 @@
         @row-click="handleRowClick"
       >
         <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column prop="name" label="角色名称"> </el-table-column>
-        <el-table-column prop="comment" label="角色备注"> </el-table-column>
+        <el-table-column prop="rolename" label="角色名称"> </el-table-column>
+        <el-table-column prop="description" label="角色备注"> </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="addRole">确 定</el-button>
@@ -254,6 +257,7 @@ export default {
   created() {
     this.get();
     this.findByAccountId();
+    this.roleSearch();
   },
   methods: {
     get() {
@@ -273,12 +277,12 @@ export default {
       };
 
       search(param, (res) => {
-        // this.roleList = res;
-        let arr = res.filter((item) => {
-          return this.myRoleList.indexOf(item) === -1;
-        });
-        this.roleList = arr;
-        this.roleCount();
+        // // this.roleList = res;
+        // let arr = res.filter((item) => {
+        //   return this.myRoleList.indexOf(item) === -1;
+        // });
+        this.roleList = res.items;
+        this.total = res.total;
       });
     },
     roleCount() {
@@ -382,6 +386,7 @@ export default {
         });
       });
     },
+    //根据当前用户，查当前用户得角色有哪些
     findByAccountId() {
       findByAccountId({ accountId: this.id }, (res) => {
         this.myRoleList = res;

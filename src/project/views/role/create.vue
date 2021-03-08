@@ -9,11 +9,11 @@
     <el-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-width="150px">
 
       <el-form-item label="角色名称" prop="name">
-        <el-input v-model="formValidate.name" placeholder="输入姓名"></el-input>
+        <el-input v-model="formValidate.rolename" placeholder="输入姓名"></el-input>
       </el-form-item>
 
       <el-form-item label="备注" prop="comment">
-        <el-input v-model="formValidate.comment" placeholder="输入备注"></el-input>
+        <el-input v-model="formValidate.description" placeholder="输入备注"></el-input>
       </el-form-item>
 
     </el-form>

@@ -80,12 +80,12 @@
               @click.native.prevent="toDetail(scope.row)"
               type="text"
               size="small">
-              {{scope.row.name}}
+              {{scope.row.rolename}}
             </el-button>
           </template>
         </el-table-column>
         <el-table-column
-          prop="comment"
+          prop="description"
           label="备注"
         >
         </el-table-column>
@@ -266,17 +266,17 @@
         }
         search(param, res => {
           let data = res;
-          _t.data = data;
-          _t.getTotal();
+          _t.data = data.items;
+          _t.total = data.total;
         });
       },
-      getTotal() {
-        let _t = this;
-        let param = {[this.model]: _t.extraParam};
-        count(param, res => {
-          _t.total = parseInt(res);
-        });
-      },
+      // getTotal() {
+      //   let _t = this;
+      //   let param = {[this.model]: _t.extraParam};
+      //   count(param, res => {
+      //     _t.total = parseInt(res);
+      //   });
+      // },
       handleTransportSelectList(list) {
         this.selectList = list;
       },
