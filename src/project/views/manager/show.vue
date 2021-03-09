@@ -38,7 +38,7 @@
         </div>
         <div class="text item">
           <span class="text_label">姓名：</span>
-           {{ manager.username}}
+          {{ manager.username }}
         </div>
         <div class="text item">
           <span class="text_label">状态：</span>
@@ -48,7 +48,9 @@
         <div class="text item">
           <span class="text_label">备注：</span>
           <span v-if="manager.description == null"> 无 </span>
-          <span v-if="manager.description != null"> {{manager.description}} </span>
+          <span v-if="manager.description != null">
+            {{ manager.description }}
+          </span>
         </div>
       </el-card>
     </el-col>
@@ -59,8 +61,10 @@
             <el-col :span="24">
               <div class="table-button">
                 <div>
-                  <el-button type="primary" @click="roleVisible = true">添加角色</el-button>
-                  <el-button @click="removeRole">删除角色</el-button>
+                  <el-button type="primary" @click="openDialog"
+                    >添加角色</el-button
+                  >
+                  <!-- <el-button @click="removeRole">删除角色</el-button> -->
                 </div>
               </div>
 
@@ -70,25 +74,14 @@
                 @selection-change="handleSelectionChange"
                 @row-click="handleRowClick"
               >
-                <el-table-column
-                  type="selection"
-                  width="55">
+                <el-table-column type="selection" width="55"> </el-table-column>
+                <el-table-column prop="rolename" label="角色名称">
                 </el-table-column>
-                <el-table-column
-                  prop="name"
-                  label="角色名称"
-                >
-                </el-table-column>
-                <el-table-column
-                  prop="comment"
-                  label="角色备注"
-                >
+                <el-table-column prop="description" label="角色备注">
                 </el-table-column>
               </el-table>
-
             </el-col>
           </el-tab-pane>
-
         </el-tabs>
       </el-card>
     </el-col>
@@ -146,8 +139,6 @@
       </div>
     </el-dialog>
 
-
-
     <el-dialog
       title="添加角色"
       :visible.sync="roleVisible"
@@ -170,6 +161,7 @@
       </div>
       <el-table
         :data="roleList"
+        ref="table"
         style="width: 100%"
         @selection-change="handleSelectionChange"
         @row-click="handleRowClick"
@@ -235,12 +227,13 @@ export default {
       sercetVisible: false,
       roleVisible: false,
       id: this.$route.params.id,
-      editId: 0,
+      editId: "",
       activeName: "first",
       page: 1,
       pageSize: 10,
       sort: { desc: ["id"] },
       roleList: [],
+      checkedRoleList: [],
       total: 0,
       rules: {
         pass: [{ validator: validatePass, trigger: "blur" }],
@@ -266,6 +259,30 @@ export default {
         this.manager = res;
       });
     },
+    openDialog() {
+      console.log("********");
+      console.log(this.checkedRoleList);
+      let check1 = this.unique(this.checkedRoleList);
+    //  this.checkedRoleList.splice(0,4);
+      // console.log(check1)
+      // console.log(this.myRoleList)
+      this.roleVisible = true;
+      this.$nextTick(() => {
+        //为什么一定意识checkedRoleList才可以让它选中！！！！
+        this.toggleSelection(this.checkedRoleList, true);
+      });
+    },
+    unique(arr) {
+      const res = new Map();
+      return arr.filter((arr) => !res.has(arr.id) && res.set(arr.id, 1));
+    },
+    toggleSelection(rows, selected) {
+      if (rows) {
+        rows.forEach((row) => {
+          this.$refs["table"].toggleRowSelection(row, selected);
+        });
+      }
+    },
     roleSearch() {
       let param = {
         pageable: {
@@ -281,25 +298,36 @@ export default {
         // let arr = res.filter((item) => {
         //   return this.myRoleList.indexOf(item) === -1;
         // });
+        let _t = this;
         this.roleList = res.items;
         this.total = res.total;
+        this.checkedRoleList = [];
+        // console.log("++++++++");
+        for (let i = 0; i < this.roleList.length; i++) {
+          for (let j = 0; j < this.myRoleList.length; j++) {
+            if (this.roleList[i].id == this.myRoleList[j].id) {
+              this.checkedRoleList.push(this.roleList[i]);
+            }
+          }
+        }
+
+        console.log(this.checkedRoleList);
+        console.log("^^^^^^^^^^^^^^^^^^^");
       });
     },
-    roleCount() {
-      count({ role: {} }, (res) => {
-        this.total = res;
-      });
-    },
+    // roleCount() {
+    //   count({ role: {} }, (res) => {
+    //     this.total = res;
+    //   });
+    // },
+
+    //选中就会返回给你当前选中的role给你
     handleSelectionChange(val) {
-      // let obj = this.compare(this.selection, val);
-      // if (obj.add.length > 0) {
-      //   this.addRole(obj.add[0].id);
-      // } else {
-      //   this.removeRole(obj.del[0].id);
-      // }
       this.selection = val;
     },
-    handleRowClick() {},
+    handleRowClick() {
+      // this.$refs.table.toggleRowSelection(row,true);//点击选中
+    },
     handleSizeChange(val) {
       this.pageSize = val;
       this.roleSearch();
@@ -313,6 +341,8 @@ export default {
       this.imgVisible = false;
       this.sercetVisible = false;
       this.roleVisible = false;
+      this.toggleSelection(this.roleList, false);
+      this.selection = [];
     },
     handleClick(command) {
       switch (command) {
@@ -364,18 +394,28 @@ export default {
     reload() {
       this.roleSearch();
     },
+
     addRole(id) {
+      // for(let i = 0 ; i<(this.myRoleList.length);i++) {
+      //   this.selection.splice(0,1);
+      // }
+      console.log("++++++");
       console.log(this.selection);
+      //       var params = new URLSearchParams();
+      // params.append("username", _t.formValidate.username);
+      // params.append("password", _t.formValidate.password);
+      let roleIds = [];
       this.selection.forEach((item, index) => {
-        addRole({ id: parseInt(this.id), roleId: item.id }, (res) => {
-          if (index === this.selection.length - 1) {
-            this.$message.success("添加成功");
-            this.findByAccountId();
-            this.handleClose();
-          }
-        });
+        console.log(item);
+        roleIds.push(item.id);
+      });
+      addRole({ id: parseInt(this.id), roleIds: roleIds }, (res) => {
+        this.$message.success("添加成功");
+        this.findByAccountId();
+        this.handleClose();
       });
     },
+
     removeRole(id) {
       this.selection.forEach((item, index) => {
         removeRole({ id: this.id, roleId: item.id }, (res) => {
@@ -388,7 +428,7 @@ export default {
     },
     //根据当前用户，查当前用户得角色有哪些
     findByAccountId() {
-      findByAccountId({ accountId: this.id }, (res) => {
+      findByAccountId({ id: this.id }, (res) => {
         this.myRoleList = res;
         this.roleSearch();
       });

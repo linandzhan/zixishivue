@@ -99,7 +99,7 @@ export function removeModule(param, callback) {
   })
 }
 export function findByAccountId(param, callback) {
-  axios.post(`api/${model}/findByAccountId`, param).then(data => {
+  axios.post(`/account/findRoleByAccount`, param).then(data => {
     if (data !== undefined && data !== '' && data !== null) {
       // callback when data is exist
       callback(data)
