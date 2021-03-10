@@ -9,7 +9,7 @@ let batchDeleteUrl = `api/${model}/delete`;
 let enableUrl = `/${model}/enable`;
 let disableUrl = `/${model}/disable`;
 let saveUrl = `api/${model}/save`;
-let updateUrl = `api/${model}/update`
+let updateUrl = `/${model}/update`
 
 export function get(param, callback) {
   axios.post(getUrl, param).then(data => {

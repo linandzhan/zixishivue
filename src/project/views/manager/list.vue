@@ -72,7 +72,7 @@
             >
               禁用
             </el-dropdown-item>
-            <el-dropdown-item
+            <!-- <el-dropdown-item
               icon="el-icon-edit"
               command="编辑"
               :disabled="selectList.length !== 1"
@@ -84,7 +84,7 @@
               @click.stop="handleEdit"
             >
               编辑
-            </el-dropdown-item>
+            </el-dropdown-item> -->
           </el-dropdown-menu>
         </el-dropdown>
         <div class="pager-group">

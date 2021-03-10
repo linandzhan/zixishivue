@@ -13,11 +13,6 @@
         "displayName": "角色管理",
         "link": "/role/list",
         "mid": 0
-      },
-      {
-        "displayName": "APP版本管理",
-        "link": "/version/list",
-        "mid": 0
       }
     ]
   },

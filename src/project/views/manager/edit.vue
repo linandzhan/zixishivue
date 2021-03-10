@@ -13,7 +13,6 @@
       <el-form-item label="头像" v-if="isFinished">
         <upload
           @on-transport-file-list="handleTransportFileList"
-          :file-list="formValidate.avator ? formValidate.avator.split(';') : []"
           :max-size="5120"
           :limit="1"
         >
@@ -95,7 +94,7 @@
           password: [
             {required: true, message: "不能为空", trigger: "blur"}
           ],
-          avatar: [
+          avator: [
             {required: true, message: "头像不能为空" , trigger: "blur"}
           ],
           realname: [
@@ -120,6 +119,8 @@
     },
     methods: {
       handleClose() {
+        // this.$refs.formValidate.resetFields()
+        // this.formValidate.avator = 
         this.$emit('on-dialog-close');
       },
       handleConfirm(name) {
@@ -131,6 +132,8 @@
               update({[this.model]: this.formValidate}, res => {
                 this.$message.success('修改成功');
                 this.$emit('on-save-success');
+                this.$emit('on-dialog-close');
+                 window.location.reload();
               })
             }
           })
@@ -138,7 +141,7 @@
       },
       //接收文件列表
       handleTransportFileList(fileList) {
-        this.formValidate.avatar = fileList[0].response.data;
+        this.formValidate.avator = fileList[0].response.data;
       },
       get(id) {
         this.isFinished = false;

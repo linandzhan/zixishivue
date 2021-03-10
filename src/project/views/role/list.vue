@@ -299,7 +299,7 @@
           selectList.forEach((item,index) => {
             del({id: item.id}, res => {
               if (selectList.length-1 === index) {
-                _t.search(_t.page);
+                this.search(1);
                 this.$message({
                   type: 'success',
                   message: '删除成功!'
@@ -307,6 +307,7 @@
               }
             });
           })
+          // this.search(1)
         }).catch(() => {
           this.$message({
             type: 'info',

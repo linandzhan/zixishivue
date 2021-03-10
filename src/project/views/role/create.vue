@@ -8,11 +8,11 @@
 
     <el-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-width="150px">
 
-      <el-form-item label="角色名称" prop="name">
+      <el-form-item label="角色名称" prop="rolename">
         <el-input v-model="formValidate.rolename" placeholder="输入姓名"></el-input>
       </el-form-item>
 
-      <el-form-item label="备注" prop="comment">
+      <el-form-item label="备注" prop="description">
         <el-input v-model="formValidate.description" placeholder="输入备注"></el-input>
       </el-form-item>
 
@@ -43,8 +43,8 @@
       return {
         model: 'role',
         formValidate: {
-          name: '',
-          comment: '',
+          rolename: '',
+          description: '',
         },
         ruleValidate: {
           name: [{required: true, message: '不能为空', trigger: 'blur'}],
@@ -63,6 +63,7 @@
             save({[this.model]: this.formValidate}, res => {
               this.$message.success('添加成功');
               this.$emit('on-save-success');
+              this.$refs.formValidate.resetFields()
             })
           }
         });

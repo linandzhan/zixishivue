@@ -99,6 +99,8 @@
     >
     </preview-img>
 
+
+
     <el-dialog
       title="修改密码"
       :visible.sync="sercetVisible"
@@ -260,15 +262,15 @@ export default {
       });
     },
     openDialog() {
-      console.log("********");
-      console.log(this.checkedRoleList);
+      // console.log("********");
+      // console.log(this.checkedRoleList);
       let check1 = this.unique(this.checkedRoleList);
     //  this.checkedRoleList.splice(0,4);
       // console.log(check1)
       // console.log(this.myRoleList)
       this.roleVisible = true;
       this.$nextTick(() => {
-        //为什么一定意识checkedRoleList才可以让它选中！！！！
+        //为什么一定要checkedRoleList才可以让它选中！！！！
         this.toggleSelection(this.checkedRoleList, true);
       });
     },

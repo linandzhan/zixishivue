@@ -3,11 +3,11 @@ const model = 'role';
 let getUrl = `api/${model}/get`;
 let searchUrl = `/${model}/searchRole`;
 let countUrl = `api/${model}/count`;
-let deleteUrl = `api/${model}/delete`;
+let deleteUrl = `/${model}/delete`;
 let batchDeleteUrl = `api/${model}/delete`;
 let enableUrl = `api/${model}/enable`;
 let disableUrl = `api/${model}/disable`;
-let saveUrl = `api/${model}/save`
+let saveUrl = `/${model}/save`
 
 export function get(param, callback) {
   axios.post(getUrl, param).then(data => {
