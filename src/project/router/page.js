@@ -13,7 +13,7 @@ const page = {
             path:'/index'
           },
           {
-            name: '系统文章管理',
+            name: '座位管理',
             path: '/page/system/list'
           },
         ]
@@ -33,11 +33,11 @@ const page = {
             path:'/index'
           },
           {
-            name: '系统文章管理',
+            name: '座位管理',
             path: '/page/system/list'
           },
           {
-            name: '系统文章详情',
+            name: '区域详情',
           },
         ]
       },

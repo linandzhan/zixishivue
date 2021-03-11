@@ -122,10 +122,6 @@ export default {
         ],
         password: [{ required: true, message: "不能为空", trigger: "blur" }],
         phone: [{ required: true, message: "手机号不能为空", trigger: "blur" }],
-        // email: [
-        //   {required: true, message: "邮箱不能为空", trigger: "blur"},
-        //   {type: "email", message: "邮箱格式不对", trigger: "blur"}
-        // ],
       },
     };
   },

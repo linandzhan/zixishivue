@@ -147,21 +147,22 @@
               >充值</el-button
             >
 
-            <el-button
+            <!-- <el-button
               @click.stop="openReduceDialog(scope.row)"
               type="text"
               size="small"
               >扣费</el-button
-            >
+            > -->
           </template>
         </el-table-column>
       </el-table>
     </el-col>
-    <!--    &lt;!&ndash;    新建&ndash;&gt;-->
-    <!--    <i-create-->
-    <!--      :dialog-visible="createProps.visible"-->
-    <!--      @on-dialog-close="handleClose"-->
-    <!--    />-->
+    <!--  新建-->
+    <i-create
+      :dialog-visible="createProps.visible"
+      @on-dialog-close="handleClose"
+      @on-save-success="handleSave"
+    />
 
     <!--    &lt;!&ndash;    编辑&ndash;&gt;-->
     <!--    <i-edit-->
@@ -193,10 +194,10 @@
       </el-form>
 
       <el-button @click="handleClose">取 消</el-button>
-      <el-button type="primary" @click="handleConfirm">确 定</el-button>
+      <el-button type="primary" @click="handleConfirm()">确 定</el-button>
     </el-dialog>
 
-    <el-dialog
+    <!-- <el-dialog
       title="用户扣费"
       :visible.sync="reDuceVisible"
       :modal-append-to-body="false"
@@ -204,7 +205,7 @@
       width="50%"
       :before-close="handleClose"
     >
-    </el-dialog>
+    </el-dialog> -->
   </el-row>
 </template>
 <script>
@@ -221,9 +222,10 @@ export default {
     return {
       model: "user",
       rechargeForm: {
-        userId: "",
+        userId: 0,
         rechargeMoney: "",
       },
+      userId: 0,
       createProps: {
         visible: false,
       },
@@ -322,17 +324,32 @@ export default {
           });
         });
     },
-    openRechargeDialog() {
+    openRechargeDialog(row) {
+      this.userId = row.id;
       this.reChargeVisible = true;
     },
-    openReduceDialog() {
+    openReduceDialog(row) {
+      this.userId = row.id;
       this.reDuceVisible = true;
     },
-    handleConfirm(){
-      
-      post('/user/recharge',{id:rechargeForm.userId,rechargeMoney:rechargeForm.rechargeMoney},(res)=>{
-         this.$message.success("扣费成功");
-      })
+    handleConfirm() {
+      post(
+        "/user/recharge",
+        { id: this.userId, rechargeMoney: this.rechargeForm.rechargeMoney },
+        (res) => {
+          this.$message({
+            type: "success",
+            message: "已成功充值",
+          });
+        }
+      );
+      this.handleClose();
+      this.search(this.page);
+    },
+    handleSave() {
+      this.createProps.visible = false;
+      // this.editProps.visible = false;
+      this.search(this.page);
     },
     handlePageSizeChange(pageSize) {
       this.pageSize = pageSize;
@@ -520,10 +537,10 @@ export default {
       });
     },
     handleClose() {
-      (this.reChargeVisible = false),
-        (this.reDuceVisible = false),
-        (this.createProps.visible = false);
-      this.editProps.visible = false;
+    this.reChargeVisible = false,
+        this.reDuceVisible = false,
+        this.createProps.visible = false;
+      // this.editProps.visible = false;
     },
     handleSelectionChange(val) {
       this.selectList = val;

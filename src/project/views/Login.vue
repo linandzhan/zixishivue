@@ -37,6 +37,12 @@
               <i class="el-icon-lock" slot="prefix" />
             </el-input>
           </el-form-item>
+          <el-form-item prop="type">
+            <el-radio-group v-model="formValidate.type">
+              <el-radio label="admin">管理员</el-radio>
+              <el-radio label="user">用户</el-radio>
+            </el-radio-group>
+          </el-form-item>
           <el-form-item>
             <el-button
               long
