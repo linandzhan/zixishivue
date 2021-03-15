@@ -81,7 +81,7 @@
         <el-row>
           <el-col class="header" style="border-radius: 4px">
             <el-button
-              @click.native.prevent="toDetail(item.id)"
+              @click.native.prevent="toDetail(item.areaId)"
               class="frontSize"
               type="text"
               size="middle"
@@ -186,35 +186,6 @@ export default {
       ],
       seats: [1, 2, 3, 4, 56, 7],
       areas: [
-        // {
-        //   id: 1,
-        //   name: "奋斗区",
-        //   seats: [
-        //     {
-        //       seatName: "1",
-        //     },
-        //     {
-        //       seatName: "2",
-        //     },
-        //   ],
-        // },
-        // {
-        //   id: 2,
-        //   name: "成功区",
-        //   seats: [
-        //     {
-        //       seatName: "成功区座位1",
-        //     },
-        //     {
-        //       seatName: "成功区座位2",
-        //     },
-        //   ],
-        // },
-        // {
-        //   id: 3,
-        //   name: "新加区",
-        //   seats: [],
-        // },
       ],
     };
   },

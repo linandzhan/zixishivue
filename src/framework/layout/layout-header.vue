@@ -41,7 +41,7 @@
         </el-select>
 
         <!-- 用户头像 -->
-        <span class="user-avator" v-if="$route.path !== '/login'">
+        <span class="user-avator" v-if="$route.path !== '/login' && manager.avator != null">
           <img
             style="width: 40px; height: 40px; border-radius: 40px"
             :src="$store.state.prefix + manager.avator"
@@ -161,6 +161,7 @@ export default {
         checkPass: "",
       },
       myUser: {},
+      flag:false,
     };
   },
   computed: {
@@ -242,7 +243,6 @@ export default {
   },
   created() {
     // this.breadcrumbList = this.$route.meta.breadcrumb;
-
     this.selectValue = localStorage.getItem("name_language") || "zh";
   },
 };

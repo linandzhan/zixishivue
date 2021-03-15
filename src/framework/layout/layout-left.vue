@@ -45,13 +45,14 @@
 </template>
 
 <script>
+import { post } from "@/framework/http/request";
 const menuList = require("./menuList.json")
 export default {
   name: "SiLayoutLeft",
   data(){
     return{
       projectName: "floder后台管理系统",
-      menuList: menuList,
+      menuList: [],
       menuBlockHeight: 0
     }
   },
@@ -59,7 +60,8 @@ export default {
     // 计算滚动区域高度
     // let logoHeight = this.$refs.siderLogo.offsetHeight;
     // this.menuBlockHeight = window.innerHeight - logoHeight;
-    // this.getMyMenu();
+    // console.log('ssswww')
+     this.getMyMenu();
   },
   methods:{
     onSelect(name,path){
@@ -86,47 +88,49 @@ export default {
       this.$router.push(link);
     },
     getMyMenu(){
-      let menuList = JSON.parse(localStorage.getItem('userCache')).menus;
-      let newArr = menuList.map(first => {
-        if (first.moduleList) {
-          return {
-            displayName:first.name,
-            icon:'',
-            children:first.moduleList.map(second => {
-              if (second.moduleList){
-                return {
-                  displayName:second.name,
-                  icon:'',
-                  children:second.moduleList.map(third => {
-                    return{
-                      displayName:third.name,
-                      icon:''
-                    }
-                  })
-                }
-              } else {
-                return{
-                  displayName:second.name,
-                  icon:'',
-                  link:second.path
-                }
-              }
+      // let menuList = JSON.parse(localStorage.getItem('userCache')).menus;
+      // let newArr = menuList.map(first => {
+      //   if (first.moduleList) {
+      //     return {
+      //       displayName:first.name,
+      //       icon:'',
+      //       children:first.moduleList.map(second => {
+      //         if (second.moduleList){
+      //           return {
+      //             displayName:second.name,
+      //             icon:'',
+      //             children:second.moduleList.map(third => {
+      //               return{
+      //                 displayName:third.name,
+      //                 icon:''
+      //               }
+      //             })
+      //           }
+      //         } else {
+      //           return{
+      //             displayName:second.name,
+      //             icon:'',
+      //             link:second.path
+      //           }
+      //         }
 
-            })
-          }
-        } else {
-          return {
-            displayName:first.name,
-            icon:'el-icon-setting',
-            link:first.path,
-          }
-        }
+      //       })
+      //     }
+      //   } else {
+      //     return {
+      //       displayName:first.name,
+      //       icon:'el-icon-setting',
+      //       link:first.path,
+      //     }
+      //   }
 
 
-      });
-      console.log(newArr);
-      this.menuList = newArr;
-
+      // });
+      // console.log(newArr);
+      // this.menuList = newArr;
+        post('/router/search',{},(res=>{
+          this.menuList = res;
+        }))
     }
   }
 }

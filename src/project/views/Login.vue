@@ -37,8 +37,8 @@
               <i class="el-icon-lock" slot="prefix" />
             </el-input>
           </el-form-item>
-          <el-form-item prop="type">
-            <el-radio-group v-model="formValidate.type">
+          <el-form-item prop="role">
+            <el-radio-group v-model="formValidate.role">
               <el-radio label="admin">管理员</el-radio>
               <el-radio label="user">用户</el-radio>
             </el-radio-group>
@@ -85,6 +85,13 @@ export default {
             trigger: "blur",
           },
         ],
+        role: [
+          {
+            required: true,
+            message: "请选择登录角色",
+            trigger: "blur",
+          },
+        ],
       },
     };
   },
@@ -100,6 +107,7 @@ export default {
           var params = new URLSearchParams();
           params.append("username", _t.formValidate.username);
           params.append("password", _t.formValidate.password);
+          params.append("role", _t.formValidate.role);
           // params.append("password", "123456");
           post(LOGIN_URL, params, (res) => {
             let user = res;
@@ -107,6 +115,7 @@ export default {
               user: user,
             });
             _t.$store.dispatch("SAVE_USER_CACHE");
+            // window.location.reload()
             _t.$router.push("/index");
           });
         }
