@@ -9,87 +9,55 @@
       ></search>
     </el-col>
     <!--    按钮和分页-->
-    <el-row>
-      <div style="width: 95%; margin: 60px auto">
-        <el-col :span="7">
-          <div class="yudingBox">
-            <el-button
-              type="success"
-              plain
-              style="
-                width: 100%;
-                height: 100%;
-                margin-bottom: 15px;
-                border-radius: 30px;
-              "
-              icon="el-icon-plus"
-              @click="toCreate"
-              >预定座位</el-button
-            >
-          </div>
-        </el-col>
-
-        <el-col :span="6">
-          <div class="tuiding">
-            <el-button
-              style="
-                width: 100%;
-                height: 100%;
-                margin-bottom: 15px;
-                border-radius: 30px;
-              "
-              icon="el-icon-minus"
-              type="primary"
-              plain
-              @click="toCreate"
-              >预定座位</el-button
-            >
-          </div>
-        </el-col>
+    <el-col :span="24">
+      <div style="width: 95%; margin: 10px auto">
+        <el-button
+          style="background: rgb(0, 161, 108); border: none"
+          icon="el-icon-plus"
+          type="success"
+          @click="toCreate"
+          >订场
+        </el-button>
+        <el-button icon="el-icon-minus" type="danger" @click="toCreate"
+          >取消订场
+        </el-button>
       </div>
-    </el-row>
-
+    </el-col>
     <!--    表格-->
     <el-col :span="24">
-      <div class="checkBox" v-for="(item, index) in areas" :key="index">
-        <!-- v-for="(item,index) in areas" -->
-        <el-row>
-          <el-col class="header" style="border-radius: 4px">
-            {{ item.areaName }}
-          </el-col>
-        </el-row>
-        <el-row class="mybox">
-          <el-col
-            :span="6"
-            v-for="(seat, index) in item.seatDTO"
-            :key="index"
-            class="myseat"
-          >
-            <div :class="{ red: seat.status == true }">
-              <span
-                v-if="seat.status == true"
-                style="display: block; text-align: left"
-                class="el-icon-message-solid"
-              ></span>
-              <span
-                v-if="seat.status == null"
-                style="display: block; text-align: left"
-                class="el-icon-bell"
-              ></span>
-              <span
-                v-if="seat.seatName == '2'"
-                style="display: block; text-align: left"
-                class="el-icon-bell"
-              ></span>
-              <span style="font-size: 15px; display: block; text-align: center"
-                >{{ seat.seatName }} &nbsp&nbsp&nbsp&nbsp {{ seat.username }}
-              </span>
-
-              <span style="display: block; height: 54px"></span>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
+      <el-table
+        :data="data"
+        style="width: 95%; margin: 0 auto"
+        @selection-change="handleSelectionChange"
+        @row-dblclick="handleRowClick"
+        @sort-change="handleSortChange"
+      >
+        <el-table-column type="selection" width="55"> </el-table-column>
+        <el-table-column label="区域名称">
+          <template slot-scope="scope">
+            <el-button
+              @click.native.prevent="toDetail(scope.row)"
+              type="text"
+              size="small"
+            >
+              {{ scope.row.title }}
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column prop="position" label="座位总数"> </el-table-column>
+        <el-table-column prop="position" label="剩余座位"> </el-table-column>
+        <el-table-column prop="position" label="价格"> </el-table-column>
+        <el-table-column fixed="right" align="center" label="操作" width="200">
+          <template slot-scope="scope">
+            <el-button
+              @click.stop="handleStatusChange(scope.row)"
+              type="text"
+              size="small"
+              >{{ scope.row.enabled == "启用" ? "禁用" : "启用" }}</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </el-col>
     <!--    新建-->
     <i-create
@@ -99,19 +67,22 @@
       :id="editId"
     />
     <!--    &lt;!&ndash;    编辑&ndash;&gt;-->
-    <!--    <i-edit-->
-    <!--      :dialog-visible="editProps.visible"-->
-    <!--      :edit-id="editId"-->
-    <!--      @on-dialog-close="handleClose"-->
-    <!--    />-->
+    <i-edit
+      :dialog-visible="editProps.visible"
+      :id="editId"
+      @on-dialog-close="handleClose"
+      @on-save-success="handleSave"
+    />
   </el-row>
 </template>
 <script>
 import Search from "@/framework/components/search";
-import ICreate from "./edit";
+import IEdit from "./edit";
+import ICreate from "./create";
 import { post } from "@/framework/http/request";
 import Emitter from "@/framework/mixins/emitter";
 import { search, count, del } from "@/project/service/page"; //接口
+import { findById } from "@/project/service/user";
 
 export default {
   name: "commodityAudit",
@@ -121,7 +92,6 @@ export default {
     return {
       categoryListName: [],
       categoryListId: [],
-      // storeName: JSON.parse(decodeURIComponent(this.$route.params.storeName)),
       model: "page",
       createProps: {
         visible: false,
@@ -141,19 +111,22 @@ export default {
       total: 0,
       extraParam: {},
       searchItems: [
+        // {
+        //   name: "文章名称",
+        //   key: "title",
+        //   type: "string",
+        // },
         {
           name: "查询时间",
           key: "updateAt",
-          type: "daterange",
+          type: "date",
         },
       ],
-      seats: [1, 2, 3, 4, 56, 7],
-      areas: [],
     };
   },
-  created() {
-    this.search(1);
-  },
+  // created() {
+  //   this.search(1);
+  // },
   computed: {
     route() {
       return this.$route;
@@ -162,8 +135,14 @@ export default {
   components: {
     Search,
     ICreate,
+    IEdit,
   },
   methods: {
+    findById() {
+      findById({ storeId: this.id }, (res) => {
+        this.data = res;
+      });
+    },
     handleEdit() {
       this.editId = this.selectList[0].id;
       this.editProps.visible = true;
@@ -238,6 +217,7 @@ export default {
       ) {
         keys.push(searchItemList[i].key);
       }
+
       for (let i in keys) {
         if (searchItems[keys[i]]) {
           this.extraParam[keys[i]] = searchItems[keys[i]];
@@ -257,26 +237,22 @@ export default {
       this.search(1);
     },
     search(page) {
-      // let _t = this;
-      // _t.page = page;
-      // _t.extraParam.label = "seat";
-      // let param = {
-      //   pageable: {
-      //     page: page,
-      //     size: _t.pageSize,
-      //     sort: _t.sort,
-      //   },
-      //   [this.model]: _t.extraParam,
-      // };
+      let _t = this;
+      _t.page = page;
+      _t.extraParam.label = "help";
+      let param = {
+        pageable: {
+          page: page,
+          size: _t.pageSize,
+          sort: _t.sort,
+        },
+        [this.model]: _t.extraParam,
+      };
 
-      // search(param, (res) => {
-      //   let data = res;
-      //   _t.data = data;
-      //   _t.getTotal();
-      // });
-
-      post("/seat/search", {}, (res) => {
-        this.areas = res;
+      search(param, (res) => {
+        let data = res;
+        _t.data = data;
+        _t.getTotal();
       });
     },
     getTotal() {
@@ -368,6 +344,7 @@ export default {
     },
     handleSave() {
       this.createProps.visible = false;
+      this.editProps.visible = false;
       this.search(this.page);
     },
     handleSelectionChange(val) {
@@ -376,11 +353,10 @@ export default {
     handleRowClick(row) {
       // print(this.id);
       this.editId = row.id;
-      this.createProps.visible = true;
+      this.editProps.visible = true;
     },
-    toDetail(id) {
-      console.log(id);
-      this.$router.push({ path: `show/` + id });
+    toDetail(row) {
+      this.$router.push({ path: `show/` + row.id });
     },
     handleCurrentChange(val) {
       this.page = val;
@@ -403,6 +379,9 @@ export default {
           break;
       }
     },
+    toCreate() {
+      this.createProps.visible = true;
+    },
   },
   mounted() {
     this.search(1);
@@ -414,78 +393,20 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
 }
+
 .el-button + .el-button {
   margin-left: 2px;
 }
+
 .el-button--default:hover {
   color: #00a16c;
-  border: 1px solid#00a16c;
+  border: 1px solid #00a16c;
   background: white;
 }
+
 .footor {
   margin: 10px 30px;
   width: 90%;
   text-align: right;
-}
-.checkBox {
-  margin: 50px 0px 0px 35px;
-}
-.header {
-  width: 60%;
-  border: 1px solid #9fa7b9;
-  text-align: center;
-  line-height: 200%;
-  height: 50px;
-  font-size: 25px;
-}
-.mybox {
-  width: 60%;
-  display: flex;
-  flex-wrap: wrap;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-.myseat {
-  line-height: 150%;
-  border: 1px solid #9fa7b9;
-  height: 97px;
-}
-.el-dropdown-menu {
-  background: rgb(62, 82, 101);
-  width: 114px;
-  padding: 0;
-  font-size: 10px;
-  margin: 0;
-  border-radius: 0;
-  .el-dropdown-menu__item {
-    color: white;
-    &:hover {
-      background: rgb(43, 57, 71);
-      color: #fff;
-    }
-  }
-  .popper__arrow {
-    opacity: 0;
-  }
-}
-.frontSize {
-  font-size: 25px;
-}
-.red {
-  background-color: rgba(28, 118, 236, 0.12);
-}
-
-.yudingBox {
-  height: 60px;
-  margin-right: 140px;
-  text-align: center;
-  border-radius: 30px;
-}
-
-.tuiding {
-  height: 60px;
-  margin-left: 90px;
-  text-align: center;
-  border-radius: 30px;
 }
 </style>
