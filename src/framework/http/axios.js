@@ -25,15 +25,17 @@ instance.interceptors.request.use(
   //   return request;
   // },
   config => {
-    if(window.localStorage) {
+    if (window.localStorage) {
       let ls = window.localStorage;
       let userStr = ls.getItem("userCache");
-      // console.log(userStr);
-      // console.log('sdawwww')
-      if(userStr) {
+
+      let userStr1 = ls.getItem("userCache");
+      console.log(userStr1);
+      if (userStr) {
         let user = JSON.parse(userStr);
         if (user.token) {
           config.headers['authorization'] = user.token;
+          // console.log('--------aaaa')
         }
       }
     }
@@ -41,18 +43,18 @@ instance.interceptors.request.use(
     // console.log(user);
     // console.log(store.state.user.token)
     // if token exist, add Access-Token to request header
-// else {
-//       // let result = store.dispatch("GET_USER_EXIST");
-//       // result.then((flag) => {
-//       //   if (flag) {
-//       //     store.dispatch("GET_USER_CACHE");
-//       //     if (store.state.user.token) {
-//       //       config.headers['authorization'] = store.state.user.token;
-//       //       config.headers['id'] = store.state.user.id;
-//       //     }
-//       //   }
-//       // })
-//     }
+    // else {
+    //       // let result = store.dispatch("GET_USER_EXIST");
+    //       // result.then((flag) => {
+    //       //   if (flag) {
+    //       //     store.dispatch("GET_USER_CACHE");
+    //       //     if (store.state.user.token) {
+    //       //       config.headers['authorization'] = store.state.user.token;
+    //       //       config.headers['id'] = store.state.user.id;
+    //       //     }
+    //       //   }
+    //       // })
+    //     }
     // change data to formData
     // let keys = Object.keys(config.data);
     // let formData = new FormData();

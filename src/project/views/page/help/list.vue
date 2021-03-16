@@ -16,10 +16,10 @@
           icon="el-icon-plus"
           type="success"
           @click="toCreate"
-          >订场
+          >预定座位
         </el-button>
         <el-button icon="el-icon-minus" type="danger" @click="toCreate"
-          >取消订场
+          >取消预定
         </el-button>
       </div>
     </el-col>
@@ -40,14 +40,15 @@
               type="text"
               size="small"
             >
-              {{ scope.row.title }}
+              {{ scope.row.areaName }}
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="position" label="座位总数"> </el-table-column>
-        <el-table-column prop="position" label="剩余座位"> </el-table-column>
-        <el-table-column prop="position" label="价格"> </el-table-column>
-        <el-table-column fixed="right" align="center" label="操作" width="200">
+        <el-table-column prop="totalSeat" label="座位总数"> </el-table-column>
+        <el-table-column prop="remainingSeat" label="剩余座位">
+        </el-table-column>
+        <el-table-column prop="amount" label="价格(元/天)"> </el-table-column>
+        <!-- <el-table-column fixed="right" align="center" label="操作" width="200">
           <template slot-scope="scope">
             <el-button
               @click.stop="handleStatusChange(scope.row)"
@@ -56,7 +57,7 @@
               >{{ scope.row.enabled == "启用" ? "禁用" : "启用" }}</el-button
             >
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </el-col>
     <!--    新建-->
@@ -117,10 +118,16 @@ export default {
         //   type: "string",
         // },
         {
-          name: "查询时间",
-          key: "updateAt",
+          name: "查询日期",
+          key: "searchTime",
           type: "date",
         },
+        {
+          name: "选择时间段",
+          key: "timeAfter",
+          type: "time",
+        },
+
       ],
     };
   },
@@ -207,6 +214,8 @@ export default {
       this.search(1);
     },
     searchBySearchItem(searchItems) {
+      console.log(searchItems);
+      console.log("+++++");
       let keys = [];
       for (
         let i = 0,
@@ -238,35 +247,19 @@ export default {
     },
     search(page) {
       let _t = this;
-      _t.page = page;
-      _t.extraParam.label = "help";
       let param = {
-        pageable: {
-          page: page,
-          size: _t.pageSize,
-          sort: _t.sort,
-        },
-        [this.model]: _t.extraParam,
+        searchTime: _t.extraParam.searchTime,
+        timeAfter: _t.extraParam.timeAfter,
       };
+      // console.log(_t.extraParam.timeAfter)
+      // console.log(_t.extraParam.searchTime)
 
       search(param, (res) => {
         let data = res;
         _t.data = data;
-        _t.getTotal();
       });
     },
-    getTotal() {
-      let _t = this;
-      let param = {
-        page: {},
-      };
-      for (let key in _t.extraParam) {
-        param.page[key] = _t.extraParam[key];
-      }
-      count(param, (res) => {
-        _t.total = parseInt(res);
-      });
-    },
+
     handleTransportSelectList(list) {
       this.selectList = list;
     },
@@ -356,7 +349,7 @@ export default {
       this.editProps.visible = true;
     },
     toDetail(row) {
-      this.$router.push({ path: `show/` + row.id });
+      this.$router.push({ path: `show/` + row.areaId });
     },
     handleCurrentChange(val) {
       this.page = val;

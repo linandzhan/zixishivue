@@ -9,69 +9,9 @@
       ></search>
     </el-col> -->
     <!--    按钮和分页-->
-    <el-col :span="24">
-      <div style="width: 95%; margin: 20px auto">
-        <!-- <el-button icon="el-icon-plus" type="primary" @click="toCreate"
-          >新增区域</el-button
-        >
-
-        <el-button icon="el-icon-plus" type="primary" @click="toCreate"
-          >预定座位</el-button
-        > -->
-        <!-- <el-dropdown
-          :trigger="'click'"
-          @command="handleClick"
-          size="medium"
-          @visible-change="onMenuChange"
-        >
-          <el-button
-            icon="el-icon-menu"
-            style="background: #3e5265; color: white"
-            >更多操作<i
-              :class="
-                menu.visible ? 'el-icon-caret-top' : 'el-icon-caret-bottom'
-              "
-            ></i
-          ></el-button>
-
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              icon="el-icon-edit"
-              command="新增区域"
-              :disabled="selectList.length !== 1"
-              style="color: #fff"
-              @click="handleEdit"
-            >
-              新增区域
-            </el-dropdown-item>
-
-            <el-dropdown-item
-              icon="el-icon-edit"
-              command="新增座位"
-              :disabled="selectList.length !== 1"
-              :style="
-                selectList.length !== 1
-                  ? { color: 'rgba(255,255,255,0.4)' }
-                  : { color: '#fff' }
-              "
-              @click="handleEdit"
-            >
-              新增座位
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown> -->
-        <!-- <div class="pager-group">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="page"
-            :page-sizes="[10, 20, 30, 40]"
-            :page-size="pageSize"
-            layout="total, sizes, jumper, prev, next"
-            :total="total"
-          >
-          </el-pagination>
-        </div> -->
+    <el-col :span="15">
+      <div style="width: 95%; margin: 20px auto; height:30px;   font-size: 35px; color:#483D8B; text-align:center; padding-top:20px">
+          管内情况实时监控
       </div>
     </el-col>
     <!--    表格-->
@@ -104,12 +44,7 @@
                 class="el-icon-message-solid"
               ></span>
               <span
-                v-if="seat.status == null"
-                style="display: block; text-align: left"
-                class="el-icon-bell"
-              ></span>
-              <span
-                v-if="seat.seatName == '2'"
+                v-if="seat.status == false"
                 style="display: block; text-align: left"
                 class="el-icon-bell"
               ></span>

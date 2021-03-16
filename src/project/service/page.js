@@ -18,8 +18,17 @@ export function get(param, callback) {
   })
 }
 
+export function searchSeat(param, callback) {
+  axios.post(`/seat/searchByArea`, param).then(data => {
+    if (data !== undefined && data !== '' && data !== null) {
+      // callback when data is exist
+      callback(data)
+    }
+  })
+}
+
 export function search(param, callback) {
-  axios.post(`api/${model}/search`, param).then(data => {
+  axios.post(`/area/search`, param).then(data => {
     if (data !== undefined && data !== '' && data !== null) {
       // callback when data is exist
       callback(data)
@@ -46,7 +55,7 @@ export function  del(param, callback) {
 }
 
 export function save(param, callback) {
-  axios.post( `api/${model}/save`, param).then(data => {
+  axios.post( `/reservation/save`, param).then(data => {
     if (data !== undefined && data !== '' && data !== null) {
       // callback when data is exist
       callback(data)

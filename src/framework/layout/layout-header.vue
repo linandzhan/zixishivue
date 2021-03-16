@@ -41,7 +41,10 @@
         </el-select>
 
         <!-- 用户头像 -->
-        <span class="user-avator" v-if="$route.path !== '/login' && manager.avator != null">
+        <span
+          class="user-avator"
+          v-if="$route.path !== '/login' && manager.avator != null"
+        >
           <img
             style="width: 40px; height: 40px; border-radius: 40px"
             :src="$store.state.prefix + manager.avator"
@@ -63,6 +66,7 @@
             >
           </el-dropdown-menu>
         </el-dropdown>
+
 
         <el-dialog
           title="修改密码"
@@ -161,7 +165,7 @@ export default {
         checkPass: "",
       },
       myUser: {},
-      flag:false,
+      flag: false,
     };
   },
   computed: {
@@ -189,20 +193,36 @@ export default {
           this.dialogVisible = true;
           break;
         case "logout":
-          this.$post("api/manager/logout", {}, (res) => {
+          post("/account/logout", {}, (res) => {
             this.$message({
               message: "退出成功",
               type: "success",
             });
           });
+
+          this.$router.replace({ path: "/login" });
           this.$store.dispatch("CLEAR_USER_CACHE");
           this.$store.commit("SAVE_ITEM", {
             user: "",
           });
-          this.$router.replace({ path: "/login" });
           break;
       }
     },
+    // myLogout() {
+    //   console.log("-0000000");
+    //   post("/account/logout", {}, (res) => {
+    //     this.$message({
+    //       message: "退出成功",
+    //       type: "success",
+    //     });
+    //   });
+
+    //   this.$store.dispatch("CLEAR_USER_CACHE");
+    //   this.$store.commit("SAVE_ITEM", {
+    //     user: "",
+    //   });
+    //   this.$router.replace({ path: "/login" });
+    // },
     handleClose() {
       this.dialogVisible = false;
     },
@@ -223,7 +243,7 @@ export default {
       });
     },
     getUser() {
-      console.log('sswwwww')
+      console.log("sswwwww");
       if (window.localStorage) {
         let _t = this;
         let ls = window.localStorage;

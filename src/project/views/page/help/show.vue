@@ -1,166 +1,316 @@
 <template>
-  <div >
-    <el-col :span="6">
-      <el-card class="box-card">
-        <div slot="header" class="clearfix">
-          <span>基本信息</span>
-          <el-dropdown style="position: absolute;right: -9px;top: -6px"  @command="handleClick">
-            <el-button type="text">
-              <img src="@/project/assets/more.png" alt="" width="10" height="8">
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="编辑">编辑</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </div>
-        <div class="text item">
-          <span class="text_label">广告标题：</span>
-          {{page.title}}
-        </div>
-        <div class="text item" style="display: flex;align-items: center">
-          <span class="text_label">广告标签：</span>
-          {{page.label}}
-        </div>
-        <div class="text item">
-          <span class="text_label">排列数字：</span>
-          {{page.position}}
-        </div>
-        <div class="text item">
-          <span class="text_label">创建时间：</span>
-          {{page.createAt}}
-        </div>
-        <div class="text item">
-          <span class="text_label">更新时间：</span>
-          {{page.updateAt}}
-        </div>
-      </el-card>
+  <el-row class="page">
+    <!--    搜索-->
+    <el-col :span="24">
+      <search
+        style="width: 95%; margin: 10px auto"
+        :search-items="searchItems"
+        @on-search="searchBySearchItem"
+      ></search>
     </el-col>
-    <el-col :span="18">
-      <el-card class="box-card-large">
-        <el-tabs v-model="activeName">
-          <el-tab-pane label="文章内容" name="first">
-            <div v-html="page.content" class="rich_text">
-
-            </div>
-          </el-tab-pane>
-
-        </el-tabs>
-      </el-card>
+    <!--    按钮和分页-->
+    <el-col :span="24"> </el-col>
+    <!--    表格-->
+    <el-col :span="24">
+      <el-table
+        :data="data"
+        style="width: 95%; margin: 0 auto"
+        @selection-change="handleSelectionChange"
+        @row-dblclick="handleRowClick"
+      >
+        <el-table-column type="selection" width="55"> </el-table-column>
+        <el-table-column prop="seatName" label="座位名称">
+        </el-table-column>
+        <el-table-column prop="description" label="座位描述"> </el-table-column>
+        <el-table-column prop="status" label="座位状态"></el-table-column>
+        <el-table-column fixed="right" align="center" label="操作" width="200">
+          <template slot-scope="scope">
+            <el-button
+              @click.stop="handleStatusChange(scope.row)"
+              type="text"
+              size="small"
+              v-if="scope.row.status === '可预约'"
+              >标记已处理</el-button
+            >
+            <el-button
+              @click.stop="handleStatusChange(scope.row)"
+              type="text"
+              size="small"
+              v-else
+              disabled
+              >已处理</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </el-col>
-    <i-edit
-      :dialog-visible="editProps.visible"
-      @on-dialog-close="handleClose"
-      @on-save-success="handleSave"
-      :id="editId"
-    />
-  </div>
+  </el-row>
 </template>
-
 <script>
-  import {get} from '@/project/service/page'
-  import iEdit from './create'
-  export default {
-    name: "show",
-    data() {
-      return {
-        textarea:'',
-        page: {
+import Search from "@/framework/components/search";
+import { post } from "@/framework/http/request";
+import Emitter from "@/framework/mixins/emitter";
+import {
+  searchSeat,
+  count,
+  del,
+  batchDelete,
+  enable,
+  close,
+  batchClose,
+} from "@/project/service/page";
 
+export default {
+  mixins: [Emitter],
+  data() {
+    return {
+      model: "advice",
+      menu: {
+        visible: false,
+      },
+      editId: 0, //编辑id
+      data: [],
+      selectList: [],
+      sort: { asc: [], desc: [] },
+      pageSize: 10,
+      page: 1,
+      total: 0,
+      id: this.$route.params.id,
+      extraParam: {},
+      searchItems: [
+        {
+          name: "查询时间",
+          key: "searchTime",
+          type: "date",
         },
-        id: this.$route.params.id,
-        activeName: 'first',
-        editProps:{
-          visible:false
-        },
-        editId:this.$route.params.id,
+      ],
+    };
+  },
+  computed: {
+    route() {
+      return this.$route;
+    },
+  },
+  components: {
+    Search,
+  },
+  methods: {
+    handlePageSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this.search(1);
+    },
+    handlePageChange(page) {
+      this.search(page);
+    },
+    handleSortChange(sort) {
+      let key = sort.key;
+      let order = sort.order;
+      let asc = this.sort.asc;
+      let desc = this.sort.desc;
+      if (asc.indexOf(key) > -1) {
+        let idx = asc.indexOf(key);
+        asc.splice(idx, 1);
       }
+      if (desc.indexOf(key) > -1) {
+        let idx = desc.indexOf(key);
+        desc.splice(idx, 1);
+      }
+      if (order !== "normal") {
+        this.sort[order].push(key);
+      }
+      this.search(1);
     },
-    components:{
-      iEdit
-    },
-    created() {
-      this.findById();
-    },
+    searchBySearchItem(searchItems) {
+      let keys = [];
+      for (
+        let i = 0,
+          searchItemList = this.searchItems,
+          len = searchItemList.length;
+        i < len;
+        i++
+      ) {
+        keys.push(searchItemList[i].key);
+      }
 
-    methods: {
-      send() {
-        updateComment({storeId: this.id,comment:this.textarea}, res => {
-          this.$message({
-            type: 'success',
-            message: '已提交!'
-          });
-          this.findById();
-        });
-      },
-      findById() {
-        get({id: this.id}, res => {
-          this.page = res;
-        });
-      },
-      handleClick(command){
-        switch (command) {
-          case '编辑':
-            this.editProps.visible = true;
-            break;
+      for (let i in keys) {
+        if (searchItems[keys[i]]) {
+          this.extraParam[keys[i]] = searchItems[keys[i]];
+        } else {
+          delete this.extraParam[keys[i]];
         }
-      },
-      handleClose(){
-        this.editProps.visible = false
-      },
-      handleSave(){
-        this.findById();
-        this.handleClose();
       }
-    }
-  }
+      //有时间段搜索进行转化字段
+      if (this.extraParam.createAt) {
+        this.extraParam.startCreateAt = this.extraParam.createAt[0];
+        this.extraParam.endCreateAt = this.extraParam.createAt[1];
+        delete this.extraParam.createAt;
+      } else {
+        delete this.extraParam.startCreateAt;
+        delete this.extraParam.endCreateAt;
+      }
+      this.search(1);
+    },
+    search(page) {
+      // let _t = this;
+      // _t.page = page;
+      // let param = {
+      //   pageable: {
+      //     page: page,
+      //     size: _t.pageSize,
+      //     sort: _t.sort,
+      //   },
+      //   [this.model]: _t.extraParam,
+      // };
+      // if (
+      //   param.pageable.sort.asc.length === 0 &&
+      //   param.pageable.sort.desc.length === 0
+      // ) {
+      //   delete param.pageable.sort;
+      // }
+      // console.log(this.extraParam.searchTime)
+      let param = {
+        id:this.id,
+        searchTime:this.extraParam.searchTime
+      }
+      searchSeat(param, (res) => {
+        let data = res;
+        this.data = data;
+        console.log(this.data)
+        this.data.forEach(element => {
+          if(element.status == true) {
+            element.status = '已预定'
+          }else {
+            element.status = '空位'
+          }
+        });
+        // _t.getTotal();
+      });
+    },
+    // getTotal() {
+    //   let _t = this;
+    //   let param = { [this.model]: _t.extraParam };
+    //   count(param, (res) => {
+    //     _t.total = parseInt(res);
+    //   });
+    // },
+    handleTransportSelectList(list) {
+      this.selectList = list;
+    },
+    //批量删除
+    batchDelete() {
+      this.broadcast("SiTable", "on-get-selectList");
+      this.$nextTick(() => {
+        let selectList = this.selectList;
+        if (selectList.length === 0) {
+          this.$notify.warning({
+            title: "至少选择一条数据",
+          });
+          return;
+        }
+        this.$confirm("确定删除所选记录吗?", "删除提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(() => {
+            let idList = selectList.map((s) => {
+              return s.id;
+            });
+            batchDelete({ idList: idList }, (res) => {
+              this.$message.success("删除成功");
+              this.search(this.page);
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除",
+            });
+          });
+      });
+    },
+    //批量处理
+    batchDeal() {
+      let _t = this;
+      let selectList = this.selectList;
+      this.$confirm("确定处理所选的记录吗?", "启用提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          let idList = selectList.map((s) => {
+            return s.id;
+          });
+          batchClose({ idList: idList }, (res) => {
+            _t.$message.success("已处理");
+            _t.search(this.page);
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消",
+          });
+        });
+    },
+    delete(id) {
+      let _t = this;
+      del({ id: id }, (res) => {
+        _t.search(_t.page);
+      });
+    },
+    enable(id, url) {
+      let _t = this;
+      post(url, { id: id }, (res) => {
+        _t.search(_t.page);
+      });
+    },
+    handleSelectionChange(val) {
+      this.selectList = val;
+    },
+    handleRowClick(row) {},
+    toDetail(row) {
+      this.$router.push({ path: "/advice/show/" + row.id });
+    },
+    handleCurrentChange(val) {
+      this.page = val;
+      this.search(this.page);
+    },
+    handleSizeChange(pageSize) {
+      this.pageSize = pageSize;
+
+      this.search(this.page);
+    },
+    handleStatusChange(row) {
+      close({ id: row.id }, (res) => {
+        this.$message.success("已处理");
+        this.search(this.page);
+      });
+    },
+  },
+  mounted() {
+    this.search(1);
+    // this.findAllRoles();
+  },
+};
 </script>
-<style scoped>
-  .text {
-    font-size: 14px;
-  }
-
-  .item {
-    margin-bottom: 18px;
-  }
-  .text_label{
-    display: inline-block;
-    width: 120px;
-    text-align: right;
-  }
-  .clearfix{
-    position: relative;
-  }
-  .clearfix:before,
-  .clearfix:after {
-    display: table;
-    content: "";
-  }
-  .clearfix:after {
-    clear: both
-  }
-
-  .box-card {
-    width: 92%;
-    margin: 20px;
-    display: inline-block;
-  }
-  .box-card-large{
-    width: 92%;
-    display: inline-block;
-    margin: 20px;
-  }
-  .el-button--text{
-    color: #3e5265;
-  }
-  .el-button--mini{
-    padding: 4px 12px;
-  }
-  .table-button{
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 0;
-  }
-  .rich_text img{
-    max-width: 100%;
-  }
+<style lang="less" scoped>
+.page {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.el-button + .el-button {
+  margin-left: 2px;
+}
+.el-button--default:hover {
+  color: #00a16c;
+  border: 1px solid#00a16c;
+  background: white;
+}
+.footor {
+  margin: 10px 30px;
+  width: 90%;
+  text-align: right;
+}
 </style>
