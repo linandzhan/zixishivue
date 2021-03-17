@@ -14,7 +14,18 @@
       label-width="150px"
     >
       <el-form-item label="预定电话" prop="phone">
-        <el-input v-model="formValidate.phone" placeholder="请输入"></el-input>
+        <el-input
+          v-model="formValidate.phone"
+          placeholder="请输入"
+          @blur="test"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="会员名称" prop="username">
+        <el-input
+          v-model="formValidate.username"
+          placeholder="会员名称"
+          :disabled="true"
+        ></el-input>
       </el-form-item>
       <el-form-item label="预定日期" prop="date">
         <el-date-picker
@@ -30,6 +41,7 @@
           placeholder="起始时间"
           v-model="formValidate.startTime"
           value-format="HH:mm:00"
+          @blur="searchOptions"
           :picker-options="{
             start: '08:30',
             step: '00:15',
@@ -41,6 +53,7 @@
           placeholder="结束时间"
           v-model="formValidate.endTime"
           value-format="HH:mm:00"
+          @blur="searchOptions"
           :picker-options="{
             start: '08:30',
             step: '00:15',
@@ -50,7 +63,7 @@
         >
         </el-time-select>
 
-          <!-- <el-time-picker
+        <!-- <el-time-picker
     v-model="formValidate.startTime"
     value-format="HH:mm:ss"
     :picker-options="{
@@ -67,10 +80,9 @@
     }"
     placeholder="任意时间点">
   </el-time-picker> -->
-       
       </el-form-item>
 
-      <el-form-item label="预定座位" prop="dateTime">
+      <el-form-item label="预定座位" prop="seat">
         <el-cascader
           v-model="formValidate.seat"
           :options="options"
@@ -127,12 +139,26 @@ export default {
         date: [
           { required: true, message: "预定日期不能为空", trigger: "blur" },
         ],
+        seat: [
+          { required: true, message: "请先选择预定时间", trigger: "blur" },
+        ],
       },
       model: "page",
     };
   },
   computed: {},
   methods: {
+    test() {
+      let param = {
+        phone: this.formValidate.phone,
+      };
+      post("/account/getAccountByPhone", param, (res) => {
+        this.formValidate.username = res.username;
+        if (this.formValidate.username == null) {
+          // this.$message.error("该电话不存在用户列表中");
+        }
+      });
+    },
     onChangeEditor(val) {
       this.formValidate.content = val.html;
     },
@@ -140,6 +166,7 @@ export default {
       // this.visible = false;
 
       this.$emit("on-dialog-close");
+      this.options = [];
       this.$refs.formValidate.resetFields();
     },
     handleConfirm(name) {
@@ -157,6 +184,7 @@ export default {
             save(param, (res) => {
               this.$message.success("添加成功");
               this.$emit("on-save-success");
+              this.options = [];
               this.$refs.formValidate.resetFields();
             });
           }
@@ -172,7 +200,15 @@ export default {
       this.formValidate.blueprint = e[0].response.data;
     },
     searchOptions() {
-      post("seat/searchOptions", {}, (res) => {
+      if (this.formValidate.endTime == null) {
+        return;
+      }
+      let param = {
+        date: this.formValidate.date,
+        startTime: this.formValidate.startTime,
+        endTime: this.formValidate.endTime,
+      };
+      post("seat/searchOptions", param, (res) => {
         let data = res;
         this.options = data;
       });
@@ -183,7 +219,7 @@ export default {
     // this.findById()
   },
   mounted() {
-    this.searchOptions();
+    // this.searchOptions();
   },
 };
 </script>

@@ -247,6 +247,7 @@ export default {
     },
     search(page) {
       let _t = this;
+    
       let param = {
         searchTime: _t.extraParam.searchTime,
         timeAfter: _t.extraParam.timeAfter,
@@ -349,7 +350,9 @@ export default {
       this.editProps.visible = true;
     },
     toDetail(row) {
-      this.$router.push({ path: `show/` + row.areaId });
+      console.log(this.extraParam)
+      let _t = this;
+      this.$router.push({ path: `show/` + row.areaId});
     },
     handleCurrentChange(val) {
       this.page = val;

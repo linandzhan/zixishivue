@@ -14,19 +14,19 @@
           </el-dropdown> -->
         </div>
         <div class="text item">
-          <span class="text_label">区域名称：{{ test }}</span>
+          <span class="text_label">区域名称：{{ info.areaName }}</span>
         </div>
         <div class="text item">
           <span class="text_label">座位总数：</span>
-          {{ page.position }}
+          {{ info.totalSeat }}
         </div>
         <div class="text item">
           <span class="text_label">占座数量：</span>
-          {{ page.createAt }}
+          {{ info.totalSeat-info.remainingSeat }}
         </div>
         <div class="text item">
           <span class="text_label">空位数量：</span>
-          {{ page.updateAt }}
+          {{info.remainingSeat }}
         </div>
       </el-card>
     </el-col>
@@ -84,6 +84,7 @@
 
 <script>
 import { get } from "@/project/service/page";
+import { post } from "@/framework/http/request";
 import iEdit from "./edit";
 export default {
   name: "show",
@@ -97,15 +98,20 @@ export default {
         visible: false,
       },
       editId: this.$route.params.id,
-      test: "hhhh",
       selectList: [],
       data: [],
+      info:{
+        areaName:"wwww"
+      },
     };
   },
   components: {
     iEdit,
   },
   created() {
+
+  },
+  mounted() {
     this.findById();
   },
 
@@ -120,8 +126,8 @@ export default {
       });
     },
     findById() {
-      get({ id: this.id }, (res) => {
-        this.page = res;
+      post('/area/getById',{ id: this.id }, (res) => {
+        this.info = res
       });
     },
     handleClick(command) {

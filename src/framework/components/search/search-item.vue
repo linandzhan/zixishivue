@@ -143,8 +143,10 @@ export default {
       let type = this.item.type;
       if(type === "time") {
         this.timeStamp.push(e);
+        console.log(this.timeStamp)
         if(this.timeStamp.length == 2) {
           obj.value = this.timeStamp
+          this.timeStamp = [];
         }
       }
 

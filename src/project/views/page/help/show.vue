@@ -1,50 +1,84 @@
 <template>
-  <el-row class="page">
-    <!--    搜索-->
-    <el-col :span="24">
+  <div>
+    <el-row class="page">
+      <!--    搜索-->
+      <el-col :span="24"> </el-col>
+      <!--    按钮和分页-->
+      <el-col :span="24"> </el-col>
+      <!--    表格-->
+      <el-col :span="24">
+
+        <el-table
+          :data="data"
+          style="width: 95%; margin: 40px auto"
+          @selection-change="handleSelectionChange"
+          @row-dblclick="handleRowClick"
+        >
+          <el-table-column type="selection" width="55"> </el-table-column>
+          <el-table-column prop="seatName" label="座位名称"> </el-table-column>
+          <el-table-column prop="description" label="座位描述">
+          </el-table-column>
+          <!-- <el-table-column prop="status" label="座位状态"></el-table-column> -->
+          <el-table-column
+            fixed="right"
+            align="center"
+            label="操作"
+            width="200"
+          >
+            <template slot-scope="scope">
+              <el-button @click="openbook(scope.row)" type="text" size="small"
+                >查看预约详情</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+ 
+      </el-col>
+    </el-row>
+
+    <el-dialog
+      title="预定座位"
+      :visible.sync="bookVisible"
+      :modal-append-to-body="false"
+      :append-to-body="true"
+      width="50%"
+      :before-close="handleClose"
+    >
       <search
         style="width: 95%; margin: 10px auto"
         :search-items="searchItems"
         @on-search="searchBySearchItem"
       ></search>
-    </el-col>
-    <!--    按钮和分页-->
-    <el-col :span="24"> </el-col>
-    <!--    表格-->
-    <el-col :span="24">
+      <div class="pager-group">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="page"
+          :page-sizes="[10, 20, 30, 40]"
+          :page-size="pageSize"
+          layout="total, sizes,jumper,prev,next"
+          :total="total"
+        >
+        </el-pagination>
+      </div>
       <el-table
-        :data="data"
-        style="width: 95%; margin: 0 auto"
+        :data="bookInfo"
+        ref="table"
+        style="width: 100%"
         @selection-change="handleSelectionChange"
-        @row-dblclick="handleRowClick"
+        @row-click="handleRowClick"
       >
-        <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column prop="seatName" label="座位名称">
-        </el-table-column>
-        <el-table-column prop="description" label="座位描述"> </el-table-column>
-        <el-table-column prop="status" label="座位状态"></el-table-column>
-        <el-table-column fixed="right" align="center" label="操作" width="200">
-          <template slot-scope="scope">
-            <el-button
-              @click.stop="handleStatusChange(scope.row)"
-              type="text"
-              size="small"
-              v-if="scope.row.status === '可预约'"
-              >标记已处理</el-button
-            >
-            <el-button
-              @click.stop="handleStatusChange(scope.row)"
-              type="text"
-              size="small"
-              v-else
-              disabled
-              >已处理</el-button
-            >
-          </template>
-        </el-table-column>
+        <!-- <el-table-column type="selection" width="55"> </el-table-column> -->
+        <el-table-column prop="username" label="预定人"> </el-table-column>
+        <el-table-column prop="startTime" label="开始时间"> </el-table-column>
+        <el-table-column prop="endTime" label="结束时间"> </el-table-column>
       </el-table>
-    </el-col>
-  </el-row>
+      <div slot="footer" class="dialog-footer">
+        <!-- <el-button type="primary" @click="addRole">确 定</el-button> -->
+        <el-button type="info" @click="handleClose">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 <script>
 import Search from "@/framework/components/search";
@@ -68,6 +102,7 @@ export default {
       menu: {
         visible: false,
       },
+      selectId: 0,
       editId: 0, //编辑id
       data: [],
       selectList: [],
@@ -84,6 +119,8 @@ export default {
           type: "date",
         },
       ],
+      bookInfo: [],
+      bookVisible: false,
     };
   },
   computed: {
@@ -95,6 +132,9 @@ export default {
     Search,
   },
   methods: {
+    handleClose() {
+      this.bookVisible = false;
+    },
     handlePageSizeChange(pageSize) {
       this.pageSize = pageSize;
       this.search(1);
@@ -148,39 +188,22 @@ export default {
         delete this.extraParam.startCreateAt;
         delete this.extraParam.endCreateAt;
       }
-      this.search(1);
+      this.searchBook(1);
     },
     search(page) {
-      // let _t = this;
-      // _t.page = page;
-      // let param = {
-      //   pageable: {
-      //     page: page,
-      //     size: _t.pageSize,
-      //     sort: _t.sort,
-      //   },
-      //   [this.model]: _t.extraParam,
-      // };
-      // if (
-      //   param.pageable.sort.asc.length === 0 &&
-      //   param.pageable.sort.desc.length === 0
-      // ) {
-      //   delete param.pageable.sort;
-      // }
-      // console.log(this.extraParam.searchTime)
       let param = {
-        id:this.id,
-        searchTime:this.extraParam.searchTime
-      }
+        id: this.id,
+        searchTime: this.extraParam.searchTime,
+      };
       searchSeat(param, (res) => {
         let data = res;
         this.data = data;
-        console.log(this.data)
-        this.data.forEach(element => {
-          if(element.status == true) {
-            element.status = '已预定'
-          }else {
-            element.status = '空位'
+        console.log(this.data);
+        this.data.forEach((element) => {
+          if (element.status == true) {
+            element.status = "已预定";
+          } else {
+            element.status = "空位";
           }
         });
         // _t.getTotal();
@@ -282,15 +305,35 @@ export default {
 
       this.search(this.page);
     },
-    handleStatusChange(row) {
-      close({ id: row.id }, (res) => {
-        this.$message.success("已处理");
-        this.search(this.page);
+    openbook(row) {
+      this.selectId = row.seatId;
+      this.bookVisible = true;
+
+      this.searchBook(1);
+    },
+
+    searchBook(page) {
+      let _t = this;
+      _t.page = page;
+
+      let param = {
+        pageable: {
+          page: page,
+          size: _t.pageSize,
+        },
+        date: this.extraParam.searchTime,
+        id: this.selectId,
+      };
+      post("/seat/searchReversation", param, (res) => {
+        this.bookInfo = res.items;
+        this.total = res.total;
       });
     },
   },
+
   mounted() {
     this.search(1);
+
     // this.findAllRoles();
   },
 };
