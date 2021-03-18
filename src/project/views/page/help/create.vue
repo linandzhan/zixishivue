@@ -27,15 +27,7 @@
           :disabled="true"
         ></el-input>
       </el-form-item>
-      <el-form-item label="预定日期" prop="date">
-        <el-date-picker
-          v-model="formValidate.date"
-          format="yyyy-MM-dd"
-          value-format="yyyy-MM-dd"
-          type="date"
-          style="width: 200px"
-        ></el-date-picker>
-      </el-form-item>
+
       <el-form-item label="预定时间" prop="dateTime">
         <el-time-select
           placeholder="起始时间"
@@ -86,7 +78,25 @@
         <el-cascader
           v-model="formValidate.seat"
           :options="options"
+          @change="culculateMoney"
         ></el-cascader>
+      </el-form-item>
+
+      <el-form-item label="需扣费" prop="money">
+        <el-input
+          v-model="formValidate.money"
+          placeholder="会员扣费"
+          :disabled="true"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="预定日期" prop="date">
+        <el-date-picker
+          v-model="formValidate.date"
+          format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd"
+          type="date"
+          style="width: 200px"
+        ></el-date-picker>
       </el-form-item>
     </el-form>
     <!--    </div>-->
@@ -148,6 +158,20 @@ export default {
   },
   computed: {},
   methods: {
+    culculateMoney() {
+      let startHour = parseInt(this.formValidate.startTime.substring(0, 2));
+      let endHour = parseInt(this.formValidate.endTime.substring(0, 2));
+      let countHour = endHour - startHour;
+      let startMinute = parseInt(this.formValidate.startTime.substring(3, 5));
+      let endMinute = parseInt(this.formValidate.endTime.substring(3, 5));
+      if (endMinute > startMinute) {
+        countHour++;
+      }
+      post("/seat/get", { id: this.formValidate.seat[1] }, (res) => {
+        this.formValidate.money = res.area.amount * countHour + "元";
+        console.log(this.formValidate.money);
+      });
+    },
     test() {
       let param = {
         phone: this.formValidate.phone,
@@ -180,6 +204,7 @@ export default {
               endTime: this.formValidate.endTime,
               areaId: this.formValidate.seat[0],
               seatId: this.formValidate.seat[1],
+              money:this.formValidate.money
             };
             save(param, (res) => {
               this.$message.success("添加成功");

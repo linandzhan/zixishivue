@@ -47,7 +47,7 @@
         <el-table-column prop="totalSeat" label="座位总数"> </el-table-column>
         <el-table-column prop="remainingSeat" label="剩余座位">
         </el-table-column>
-        <el-table-column prop="amount" label="价格(元/天)"> </el-table-column>
+        <el-table-column prop="amount" label="价格(元/时)"> </el-table-column>
         <!-- <el-table-column fixed="right" align="center" label="操作" width="200">
           <template slot-scope="scope">
             <el-button

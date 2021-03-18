@@ -18,15 +18,15 @@
         </div>
         <div class="text item">
           <span class="text_label">座位总数：</span>
-          {{ info.totalSeat }}
+          {{ info.totalSeat }} 位
         </div>
         <div class="text item">
-          <span class="text_label">占座数量：</span>
-          {{ info.totalSeat-info.remainingSeat }}
+          <span class="text_label">在馆人数：</span>
+          {{ info.totalSeat-info.remainingSeat }} 位
         </div>
         <div class="text item">
           <span class="text_label">空位数量：</span>
-          {{info.remainingSeat }}
+          {{info.remainingSeat }} 位
         </div>
       </el-card>
     </el-col>
@@ -45,30 +45,19 @@
       </el-card> -->
       <el-card class="box-card-large">
         <el-table
-          :data="data"
+          :data="seatList"
           style="width: 95%; margin: 0 auto"
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="seatName" label="座位"></el-table-column>
-          <el-table-column prop="type" label="状态"></el-table-column>
+          <el-table-column prop="status" label="状态"></el-table-column>
           <el-table-column
             fixed="right"
-            align="center"
-            label="操作"
+            prop="username"
+            label="占座人"
             width="200"
           >
-            <template slot-scope="scope">
-              <el-button
-                @click.stop="handleStatusChange(scope.row)"
-                type="text"
-                size="small"
-                >{{
-                  scope.row.type.indexOf("启用") >= 0 ? "禁用" : "启用"
-                }}</el-button
-              >
-              <!-- <el-button @click.stop="handleStatusChange(scope.row)" type="text" size="small">{{'扣费'}}</el-button> -->
-            </template>
           </el-table-column>
         </el-table>
       </el-card>
@@ -100,9 +89,8 @@ export default {
       editId: this.$route.params.id,
       selectList: [],
       data: [],
-      info:{
-        areaName:"wwww"
-      },
+      info:{},
+      seatList:[],
     };
   },
   components: {
@@ -113,9 +101,22 @@ export default {
   },
   mounted() {
     this.findById();
+    this.findSeatsByArea();
   },
 
   methods: {
+    findSeatsByArea() {
+      post('/seat/searchByArea',{id:this.id},(res)=>{
+        this.seatList = res;
+        this.seatList.forEach(element=>{
+          if(!element.status == false) {
+            element.status = '已占座'
+          }else {
+            element.status = '未占座'
+          }
+        })
+      })
+    },
     send() {
       updateComment({ storeId: this.id, comment: this.textarea }, (res) => {
         this.$message({

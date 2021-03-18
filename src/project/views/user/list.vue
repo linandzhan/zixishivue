@@ -344,6 +344,7 @@ export default {
         }
       );
       this.handleClose();
+      this.$refs.rechargeForm.resetFields();
       this.search(this.page);
     },
     handleSave() {
@@ -537,9 +538,9 @@ export default {
       });
     },
     handleClose() {
-    this.reChargeVisible = false,
-        this.reDuceVisible = false,
-        this.createProps.visible = false;
+      (this.reChargeVisible = false),
+        (this.reDuceVisible = false),
+        (this.createProps.visible = false);
       // this.editProps.visible = false;
     },
     handleSelectionChange(val) {
