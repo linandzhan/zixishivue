@@ -18,9 +18,6 @@
           @click="toCreate"
           >预定座位
         </el-button>
-        <el-button icon="el-icon-minus" type="danger" @click="toCreate"
-          >取消预定
-        </el-button>
       </div>
     </el-col>
     <!--    表格-->
@@ -48,16 +45,6 @@
         <el-table-column prop="remainingSeat" label="剩余座位">
         </el-table-column>
         <el-table-column prop="amount" label="价格(元/时)"> </el-table-column>
-        <!-- <el-table-column fixed="right" align="center" label="操作" width="200">
-          <template slot-scope="scope">
-            <el-button
-              @click.stop="handleStatusChange(scope.row)"
-              type="text"
-              size="small"
-              >{{ scope.row.enabled == "启用" ? "禁用" : "启用" }}</el-button
-            >
-          </template>
-        </el-table-column> -->
       </el-table>
     </el-col>
     <!--    新建-->
@@ -131,9 +118,7 @@ export default {
       ],
     };
   },
-  // created() {
-  //   this.search(1);
-  // },
+
   computed: {
     route() {
       return this.$route;
@@ -252,8 +237,6 @@ export default {
         searchTime: _t.extraParam.searchTime,
         timeAfter: _t.extraParam.timeAfter,
       };
-      // console.log(_t.extraParam.timeAfter)
-      // console.log(_t.extraParam.searchTime)
 
       search(param, (res) => {
         let data = res;
@@ -278,10 +261,6 @@ export default {
           selectList.map((s) => {
             enable({ id: s.id }, (res) => {
               _t.search(_t.page);
-              // this.$message({
-              //   type: 'success',
-              //   message: '删除成功!'
-              // });
             });
           });
         })
@@ -305,10 +284,6 @@ export default {
           selectList.map((s) => {
             disable({ id: s.id }, (res) => {
               _t.search(_t.page);
-              // this.$message({
-              //   type: 'success',
-              //   message: '删除成功!'
-              // });
             });
           });
         })

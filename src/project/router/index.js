@@ -12,6 +12,8 @@ import trendingWord from './trendingWord'
 import slide from './slide'
 import page from './page'
 import notification from './notification'
+import myInfo from './myInfo'
+import clock from './clock'
 
 Vue.use(Router);
 Vue.use(ElementUI);
@@ -26,7 +28,9 @@ let routeList = [
   trendingWord.routes,
   slide.routes,
   page.routes,
-  notification.routes
+  notification.routes,
+  myInfo.routes,
+  clock.routes
 
 ];
 

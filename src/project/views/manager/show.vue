@@ -273,6 +273,7 @@ export default {
         //为什么一定要checkedRoleList才可以让它选中！！！！
         this.toggleSelection(this.checkedRoleList, true);
       });
+      
     },
     unique(arr) {
       const res = new Map();

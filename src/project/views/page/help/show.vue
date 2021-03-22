@@ -7,7 +7,6 @@
       <el-col :span="24"> </el-col>
       <!--    表格-->
       <el-col :span="24">
-
         <el-table
           :data="data"
           style="width: 95%; margin: 40px auto"
@@ -32,7 +31,6 @@
             </template>
           </el-table-column>
         </el-table>
- 
       </el-col>
     </el-row>
 
@@ -68,13 +66,24 @@
         @selection-change="handleSelectionChange"
         @row-click="handleRowClick"
       >
-        <!-- <el-table-column type="selection" width="55"> </el-table-column> -->
         <el-table-column prop="username" label="预定人"> </el-table-column>
         <el-table-column prop="startTime" label="开始时间"> </el-table-column>
         <el-table-column prop="endTime" label="结束时间"> </el-table-column>
+        <el-table-column prop="haveUsing" label="状态">
+          <template slot-scope="scope">
+            <el-button
+              @click.native.prevent="toReason(scope.row)"
+              type="text"
+              size="small"
+              v-if="scope.row.haveUsing == '已取消'"
+            >
+              {{ scope.row.haveUsing }}(查看原因)
+            </el-button>
+            <span v-else>{{ scope.row.haveUsing }}</span>
+          </template>
+        </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <!-- <el-button type="primary" @click="addRole">确 定</el-button> -->
         <el-button type="info" @click="handleClose">取 消</el-button>
       </div>
     </el-dialog>
@@ -98,6 +107,7 @@ export default {
   mixins: [Emitter],
   data() {
     return {
+      reason:"",
       model: "advice",
       menu: {
         visible: false,
@@ -132,6 +142,22 @@ export default {
     Search,
   },
   methods: {
+    toReason(row) { 
+       this.reason = row.cancelReason;      
+       let r = this.reason; 
+      this.$alert(r, {
+          confirmButtonText: '确定',
+          callback: action => {
+            this.$message({
+              type: 'info',
+              message: `action: ${ ss }`
+            });
+          }
+        });
+    
+     
+
+    },
     handleClose() {
       this.bookVisible = false;
     },
@@ -206,16 +232,8 @@ export default {
             element.status = "空位";
           }
         });
-        // _t.getTotal();
       });
     },
-    // getTotal() {
-    //   let _t = this;
-    //   let param = { [this.model]: _t.extraParam };
-    //   count(param, (res) => {
-    //     _t.total = parseInt(res);
-    //   });
-    // },
     handleTransportSelectList(list) {
       this.selectList = list;
     },
@@ -327,6 +345,13 @@ export default {
       post("/seat/searchReversation", param, (res) => {
         this.bookInfo = res.items;
         this.total = res.total;
+        res.items.forEach((element) => {
+          if (element.haveUsing == true) {
+            element.haveUsing = "正常";
+          } else {
+            element.haveUsing = "已取消";
+          }
+        });
       });
     },
   },

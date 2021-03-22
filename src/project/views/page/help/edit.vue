@@ -5,7 +5,6 @@
     :modal-append-to-body='false'
     width="60%"
     :before-close="handleClose">
-    <!--    <div style="overflow: auto;height:40vh;padding: 10px 0 40px;">-->
     <el-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-width="150px">
       <el-form-item label="文章名字" prop="title">
         <el-input v-model="formValidate.title" placeholder="请输入"></el-input>
@@ -17,7 +16,6 @@
         <Editor :defaultContent="formValidate.content" @on-change-content="onChangeEditor"/>
       </el-form-item>
     </el-form>
-    <!--    </div>-->
 
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleClose">取 消</el-button>

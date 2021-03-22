@@ -6,7 +6,6 @@
     width="60%"
     :before-close="handleClose"
   >
-    <!--    <div style="overflow: auto;height:40vh;padding: 10px 0 40px;">-->
     <el-form
       ref="formValidate"
       :model="formValidate"
@@ -28,6 +27,15 @@
         ></el-input>
       </el-form-item>
 
+      <el-form-item label="预定日期" prop="date">
+        <el-date-picker
+          v-model="formValidate.date"
+          format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd"
+          type="date"
+          style="width: 200px"
+        ></el-date-picker>
+      </el-form-item>
       <el-form-item label="预定时间" prop="dateTime">
         <el-time-select
           placeholder="起始时间"
@@ -55,23 +63,7 @@
         >
         </el-time-select>
 
-        <!-- <el-time-picker
-    v-model="formValidate.startTime"
-    value-format="HH:mm:ss"
-    :picker-options="{
-      selectableRange: '18:30:00 - 20:30:00'
-    }"
-    placeholder="任意时间点">
-  </el-time-picker>
-  <el-time-picker
-    arrow-control
-    v-model="formValidate.endTime"
-    value-format="HH:mm:ss"
-    :picker-options="{
-      selectableRange: '18:30:00 - 20:30:00'
-    }"
-    placeholder="任意时间点">
-  </el-time-picker> -->
+
       </el-form-item>
 
       <el-form-item label="预定座位" prop="seat">
@@ -88,15 +80,6 @@
           placeholder="会员扣费"
           :disabled="true"
         ></el-input>
-      </el-form-item>
-      <el-form-item label="预定日期" prop="date">
-        <el-date-picker
-          v-model="formValidate.date"
-          format="yyyy-MM-dd"
-          value-format="yyyy-MM-dd"
-          type="date"
-          style="width: 200px"
-        ></el-date-picker>
       </el-form-item>
     </el-form>
     <!--    </div>-->
@@ -148,9 +131,6 @@ export default {
         phone: [{ required: true, message: "电话不能为空", trigger: "blur" }],
         date: [
           { required: true, message: "预定日期不能为空", trigger: "blur" },
-        ],
-        seat: [
-          { required: true, message: "请先选择预定时间", trigger: "blur" },
         ],
       },
       model: "page",
@@ -204,7 +184,7 @@ export default {
               endTime: this.formValidate.endTime,
               areaId: this.formValidate.seat[0],
               seatId: this.formValidate.seat[1],
-              money:this.formValidate.money
+              money: this.formValidate.money,
             };
             save(param, (res) => {
               this.$message.success("添加成功");

@@ -14,7 +14,7 @@ const notification = {
             path:'/index'
           },
           {
-            name:'平台消息管理',
+            name:'我的预约',
             path:'/notification/list'
           }
         ]
