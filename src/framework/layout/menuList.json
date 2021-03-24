@@ -1,0 +1,65 @@
+[
+  {
+    "displayName": "message.system",
+    "icon": "el-icon-setting",
+    "mid": 1,
+    "children": [
+      {
+        "displayName": "管理员管理",
+        "link": "/manager/list",
+        "mid": 0
+      },
+      {
+        "displayName": "角色管理",
+        "link": "/role/list",
+        "mid": 0
+      }
+    ]
+  },
+  {
+    "displayName": "用户管理",
+    "icon": "el-icon-user",
+    "mid": 1,
+    "children": [
+      {
+        "displayName": "用户列表",
+        "link": "/user/list",
+        "mid": 0
+      }
+    ]
+  },
+  {
+    "displayName": "自习室运营",
+    "icon": "el-icon-tickets",
+    "mid": 1,
+    "children": [
+      {
+        "displayName": "座位管理",
+        "link": "/page/system/list",
+        "mid": 0
+      },
+      {
+        "displayName": "预定座位",
+        "link": "/page/help/list",
+        "mid": 0
+      }
+    ]
+  },
+  {
+    "displayName": "收支管理",
+    "icon": "el-icon-s-data",
+    "mid": 1,
+    "children": [
+      {
+        "displayName": "订单管理",
+        "link": "/advice/list",
+        "mid": 0
+      },
+      {
+        "displayName": "数据看板",
+        "link": "/notification/list",
+        "mid": 0
+      }
+    ]
+  }
+]
