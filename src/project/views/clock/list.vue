@@ -41,6 +41,9 @@
           <el-tab-pane label="待评价" name="second"> 设备信息 </el-tab-pane>
         </el-tabs>
       </el-card>
+      <div style="text-align:center">
+      <el-button>打卡</el-button>
+      </div>
     </el-col>
   </div>
 </template>

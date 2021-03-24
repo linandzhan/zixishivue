@@ -13,45 +13,107 @@
         :xs="{ span: 12, offset: 8 }"
         :lg="{ span: 6, offset: 9 }"
       >
-        <el-form ref="formValidate" :model="formValidate" :rules="ruleValidate">
-          <el-form-item :label="$t('message.username')" prop="username">
-            <el-input
-              class="has-prefix"
-              :maxlength="50"
-              v-model="formValidate.username"
-              placeholder="请输入用户名"
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tab-pane label="用户登录" name="first">
+            <el-form
+              ref="formValidate"
+              :model="formValidate"
+              :rules="ruleValidate"
             >
-              <i class="el-icon-user-solid" slot="prefix" />
-            </el-input>
-          </el-form-item>
-          <el-form-item :label="$t('message.password')" prop="password">
-            <el-input
-              class="has-prefix"
-              style="padding-left: 0px !important"
-              :type="'password'"
-              :minlength="6"
-              :maxlength="20"
-              v-model="formValidate.password"
-              placeholder="请输入登录密码"
+              <el-form-item :label="$t('message.username')" prop="username">
+                <el-input
+                  class="has-prefix"
+                  :maxlength="50"
+                  v-model="formValidate.username"
+                  placeholder="请输入用户名"
+                >
+                  <i class="el-icon-user-solid" slot="prefix" />
+                </el-input>
+              </el-form-item>
+              <el-form-item :label="$t('message.password')" prop="password">
+                <el-input
+                  class="has-prefix"
+                  style="padding-left: 0px !important"
+                  :type="'password'"
+                  :minlength="6"
+                  :maxlength="20"
+                  v-model="formValidate.password"
+                  placeholder="请输入登录密码"
+                >
+                  <i class="el-icon-lock" slot="prefix" />
+                </el-input>
+              </el-form-item>
+              <el-form-item prop="role">
+                <el-radio-group v-model="formValidate.role">
+                  <el-radio label="admin">管理员</el-radio>
+                  <el-radio label="user">用户</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <el-form-item>
+                <el-button
+                  long
+                  type="success"
+                  @click="handleSubmit('formValidate')"
+                  >{{ $t("message.signIn") }}</el-button
+                >
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+
+          <el-tab-pane label="用户注册" name="second">
+            <el-form
+              ref="registerForm"
+              :model="registerForm"
+              :rules="registerValidate"
             >
-              <i class="el-icon-lock" slot="prefix" />
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="role">
-            <el-radio-group v-model="formValidate.role">
-              <el-radio label="admin">管理员</el-radio>
-              <el-radio label="user">用户</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              long
-              type="success"
-              @click="handleSubmit('formValidate')"
-              >{{ $t("message.signIn") }}</el-button
-            >
-          </el-form-item>
-        </el-form>
+              <el-form-item label="用户名" prop="username">
+                <el-input
+                  class="has-prefix"
+                  :maxlength="50"
+                  v-model="registerForm.username"
+                  placeholder="请输入用户名"
+                >
+                  <i class="el-icon-user-solid" slot="prefix" />
+                </el-input>
+              </el-form-item>
+              <el-form-item label="密码" prop="password">
+                <el-input
+                  class="has-prefix"
+                  :maxlength="50"
+                  v-model="registerForm.password"
+                  placeholder="请输入密码"
+                >
+                  <i class="el-icon-lock" slot="prefix" />
+                </el-input>
+              </el-form-item>
+              <el-form-item label="电话" prop="phone">
+                <el-input
+                  class="has-prefix"
+                  :maxlength="50"
+                  v-model="registerForm.phone"
+                  placeholder="请输入电话"
+                >
+                  <i class="el-icon-phone" slot="prefix" />
+                </el-input>
+              </el-form-item>
+
+              <el-form-item label="性别" prop="gender">
+                <el-radio v-model="registerForm.gender" label="男">男</el-radio>
+                <el-radio v-model="registerForm.gender" label="女">女</el-radio>
+              </el-form-item>
+
+              <el-form-item>
+                <el-button
+                  long
+                  type="success"
+                  @click="registerSubmit('registerForm')"
+                  >注册</el-button
+                >
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+        </el-tabs>
       </el-col>
     </el-row>
   </div>
@@ -65,10 +127,43 @@ export default {
   name: "Login",
   data() {
     return {
+      model: "user",
+      activeName: "first",
       projectName: "lychee后台管理系统",
       formValidate: {
         username: "王柳",
         password: "123456",
+      },
+      registerForm: {},
+      registerValidate: {
+        username: [
+          {
+            required: true,
+            message: "用户名不能为空",
+            trigger: "blur",
+          },
+        ],
+        password: [
+          {
+            required: true,
+            message: "登录密码不能为空",
+            trigger: "blur",
+          },
+        ],
+        gender: [
+          {
+            required: true,
+            message: "请选择性别",
+            trigger: "blur",
+          },
+        ],
+        phone: [
+          {
+            required: true,
+            message: "注册电话不能为空",
+            trigger: "blur",
+          },
+        ],
       },
       ruleValidate: {
         username: [
@@ -96,6 +191,27 @@ export default {
     };
   },
   methods: {
+    handleClick(tab, event) {
+      console.log(tab, event);
+    },
+    toRegister() {
+      this.$router.push("/register");
+    },
+    registerSubmit(name) {
+      let _t = this;
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          console.log("weasd222");
+          console.log(this.registerForm.phone);
+          console.log(this.registerForm.username);
+          post("/user/save", { [this.model]: this.registerForm }, (res) => {
+            this.$message.success("注册成功，可以去登录");
+            this.$refs.registerForm.resetFields()
+            this.activeName = "first";
+          });
+        }
+      });
+    },
     handleSubmit(name) {
       let _t = this;
       this.$refs[name].validate((valid) => {

@@ -101,7 +101,8 @@ export default {
       opinionData: [],
 
       mychart: "",
-      option1: [100, 22, 45, 15],
+      optionData1: [],
+      optionName:[],
       searchItems: [],
     };
   },
@@ -122,8 +123,16 @@ export default {
         month: this.valuetype2,
       };
       post("/area/searchMoneyByAreaAndDate", param, (res) => {
+        let optionDataTemp = [];
+        let optionNameTemp = [];
         let i = 0;
-        this.opinionData = res;
+        this.opinionData = res.areas;
+        res.incomes.forEach(element => {
+            optionDataTemp.push(element.income);
+            optionNameTemp.push(element.month);
+        });
+        this.optionData1 = optionDataTemp;
+        this.optionName = optionNameTemp;
         this.drawPie("pieReport");
         this.drawZhu("main");
       });
@@ -204,21 +213,8 @@ export default {
           axisLine: {
             show: true,
           },
-          data: [
-            "衬衫",
-            "羊毛衫",
-            "雪纺衫",
-            "裤子",
-            "高跟鞋",
-            "袜子1",
-            "衬衫2",
-            "羊毛衫3",
-            "雪纺衫4",
-            "裤子5",
-            "高跟鞋6",
-            "袜子6",
-          ],
-          name: "区域名称",
+          data: this.optionName,
+          name: "月份",
         },
         yAxis: {
           //是否显示y轴线条
@@ -233,7 +229,7 @@ export default {
           {
             name: "收入金额",
             type: "bar",
-            data: this.option1,
+            data: this.optionData1,
             label: { show: true, position: "top" },
           },
         ],

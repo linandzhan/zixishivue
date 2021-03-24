@@ -93,6 +93,7 @@
           return this.$route.path;
         },
         route() {
+          console.log('**(*(*(*(*(***')
           console.log(this.$route.meta);
           return this.$route;
         },

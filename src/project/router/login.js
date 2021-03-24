@@ -29,7 +29,7 @@ const login = {
         isShowHeader:true,
         isShowLeftSider:false,
       },
-      component: () => import( '@/project/views/Login.vue'),
+      component: () => import('@/project/views/Login.vue'),
     },
 
   ]

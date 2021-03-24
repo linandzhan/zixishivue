@@ -14,6 +14,7 @@ import page from './page'
 import notification from './notification'
 import myInfo from './myInfo'
 import clock from './clock'
+import register from './register'
 
 Vue.use(Router);
 Vue.use(ElementUI);
@@ -30,8 +31,8 @@ let routeList = [
   page.routes,
   notification.routes,
   myInfo.routes,
-  clock.routes
-
+  clock.routes,
+  register.routes
 ];
 
 let routes = [];
@@ -63,7 +64,10 @@ router.beforeEach((to,from,next) => {
   } else {
     if (to.path === '/login' ||  to.path === '/'){
       next();
-    } else {
+    }else if(to.path === '/register') {
+      next();
+    } 
+    else {
       next({path:'/login'});
       loading.close()
     }
