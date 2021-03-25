@@ -25,8 +25,8 @@
         path:'/clock/signInOut',
         name:'signInOut',
         meta:{
-          isShowHeader:true,
-          isShowLeftSider:true,
+          isShowHeader:false,
+          isShowLeftSider:false,
           keepAlive:true,
           breadcrumb: [
             {
