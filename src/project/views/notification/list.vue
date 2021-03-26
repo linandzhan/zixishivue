@@ -234,10 +234,11 @@
             placeholder="原因"
           ></el-input>
         </el-form-item>
+
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="putReason('formValidate')"
+        <el-button type="primary" @click="open()"
           >确 定</el-button
         >
         <el-button type="info" @click="handleClose">取 消</el-button>
@@ -313,6 +314,20 @@ export default {
     ICreate,
   },
   methods: {
+      open() {
+        this.$confirm('距离开始学习时间已不到5小时,需扣除您百分之50的费用，您确定取消预约？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.putReason('formValidate');
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消该操作'
+          });          
+        });
+      },
     putReason(name) {
       this.$nextTick(() => {
         this.$refs[name].validate((valid) => {

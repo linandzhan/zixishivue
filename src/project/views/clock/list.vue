@@ -29,11 +29,18 @@
                   style="width: 95%; margin: 0 auto"
                   @row-dblclick="handleRowClick"
                 >
-                <el-table-column type="selection" width="55"> </el-table-column>
-                <el-table-column prop="phone" label="签到时间"> </el-table-column>
-                <el-table-column prop="createTime" label="签退时间"></el-table-column>
-                                    <el-table-column prop="enabled" label="学习时长"> </el-table-column>
-                  <el-table-column prop="enabled" label="座位"> </el-table-column>
+                  <el-table-column type="selection" width="55">
+                  </el-table-column>
+                  <el-table-column prop="phone" label="签到时间">
+                  </el-table-column>
+                  <el-table-column
+                    prop="createTime"
+                    label="签退时间"
+                  ></el-table-column>
+                  <el-table-column prop="enabled" label="学习时长">
+                  </el-table-column>
+                  <el-table-column prop="enabled" label="座位">
+                  </el-table-column>
                 </el-table>
               </el-col>
             </el-row>
@@ -41,8 +48,8 @@
           <el-tab-pane label="待评价" name="second"> 设备信息 </el-tab-pane>
         </el-tabs>
       </el-card>
-      <div style="text-align:center">
-      <el-button>打卡</el-button>
+      <div style="text-align: center">
+        <el-button type="primary" @click="getErWeiMa">打卡</el-button>
       </div>
     </el-col>
   </div>
@@ -55,10 +62,12 @@ export default {
   mixins: [Emitter],
   data() {
     return {
-      uncommentData:[],
-      uncomentTotal:0,
-      page:0,
-      pageSize:10
+      uncommentData: [],
+      uncomentTotal: 0,
+      page: 0,
+      pageSize: 10,
+      imgUrl: "",
+      imgShow:false,
     };
   },
   computed: {
@@ -67,10 +76,17 @@ export default {
     },
   },
   methods: {
-        handleSelectionChange(val) {
+    getErWeiMa() {
+      post('/clock/getErWeiMa',{},(res)=>{
+        this.imgUrl = res;
+          window.location.href = this.imgUrl;
+      })
+     
+    },
+    handleSelectionChange(val) {
       this.selectList = val;
     },
-        handleRowClick(row) {
+    handleRowClick(row) {
       // this.editId = row.id;
       // this.createProps.visible = true;
     },
@@ -87,13 +103,13 @@ export default {
       let _t = this;
       _t.page = page;
       let param = {
-        page:page,
-        size:_t.pageSize
-      }
-      post('/clock/searchUncoment',param,(res)=>{
-        console.log(res)
-      })
-    }
+        page: page,
+        size: _t.pageSize,
+      };
+      post("/clock/searchUncoment", param, (res) => {
+        console.log(res);
+      });
+    },
   },
   mounted() {
     this.search(1);

@@ -232,6 +232,7 @@ export default {
             });
             _t.$store.dispatch("SAVE_USER_CACHE");
             // window.location.reload()
+            // this.$router.push({path: '/login?url=' + this.$route.path});
             _t.$router.push("/index");
           });
         }
