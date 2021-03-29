@@ -3,7 +3,7 @@
     <el-row>
       <el-col style="margin: 10px 1%; width: 98%">
         <el-tabs type="border-card" @tab-click="handleTabClick">
-          <el-tab-pane label="预约未开始">
+          <el-tab-pane label="我的预约">
             <el-row class="page">
               <!--    搜索-->
               <el-col :span="24">
@@ -55,6 +55,10 @@
                   </el-table-column>
                   <el-table-column prop="endTime" label="结束时间" sortable>
                   </el-table-column>
+                  <el-table-column prop="status" label="状态" sortable>
+                  </el-table-column>
+                  <el-table-column prop="haveClock" label="是否打卡" sortable>
+                  </el-table-column>
                   <el-table-column
                     fixed="right"
                     align="center"
@@ -66,6 +70,7 @@
                         @click.stop="handleStatusChange(scope.row)"
                         type="text"
                         size="small"
+                        v-if="scope.row.status == '待开始'"
                         >{{
                           scope.row.status == "取消预约" ? "已取消" : "取消预约"
                         }}</el-button
@@ -77,7 +82,7 @@
               <!--    新建-->
             </el-row>
           </el-tab-pane>
-          <el-tab-pane label="预约已取消">
+          <el-tab-pane label="已取消预约">
             <el-row class="page">
               <!--    搜索-->
               <el-col :span="24">
@@ -140,76 +145,6 @@
               <!--    新建-->
             </el-row>
           </el-tab-pane>
-          <el-tab-pane label="预约已结束">
-            <el-row class="page">
-              <!--    搜索-->
-              <el-col :span="24">
-                <search
-                  style="width: 95%; margin: 10px auto"
-                  :search-items="searchItems"
-                  @on-search="searchBySearchItem3"
-                ></search>
-              </el-col>
-              <!--    按钮和分页-->
-              <el-col :span="24">
-                <div style="width: 95%; margin: 10px auto">
-                  <div class="pager-group">
-                    <el-pagination
-                      @size-change="handleSizeChange"
-                      @current-change="handleCurrentChange3"
-                      :current-page="page"
-                      :page-sizes="[10, 20, 30, 40]"
-                      :page-size="pageSize"
-                      layout="total, sizes, jumper, prev, next"
-                      :total="successTotal"
-                    >
-                    </el-pagination>
-                  </div>
-                </div>
-              </el-col>
-              <!--    表格-->
-              <el-col :span="24">
-                <el-table
-                  :data="successData"
-                  style="width: 95%; margin: 0 auto"
-                  @selection-change="handleSelectionChange"
-                  @row-dblclick="handleRowClick"
-                  @sort-change="handleSortChange"
-                >
-                  <el-table-column type="selection" width="55">
-                  </el-table-column>
-                  <el-table-column prop="seat.seatName" label="预约座位">
-                  </el-table-column>
-                  <el-table-column
-                    prop="seat.description"
-                    label="座位描述"
-                    sortable="custom"
-                  >
-                  </el-table-column>
-                  <el-table-column prop="bookDate" label="预约日期" sortable>
-                  </el-table-column>
-                  <el-table-column
-                    prop="startTime"
-                    label="开始时间"
-                    sortable="custom"
-                  >
-                  </el-table-column>
-                  <el-table-column
-                    prop="endTime"
-                    label="结束时间"
-                    sortable="custom"
-                  >
-                  </el-table-column>
-                  <el-table-column
-                    prop="haveStudy"
-                    label="是否到场学习"
-                    sortable="custom"
-                  >
-                  </el-table-column>
-                </el-table>
-              </el-col>
-            </el-row>
-          </el-tab-pane>
         </el-tabs>
       </el-col>
     </el-row>
@@ -234,13 +169,10 @@
             placeholder="原因"
           ></el-input>
         </el-form-item>
-
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="open()"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="open()">确 定</el-button>
         <el-button type="info" @click="handleClose">取 消</el-button>
       </div>
     </el-dialog>
@@ -314,20 +246,26 @@ export default {
     ICreate,
   },
   methods: {
-      open() {
-        this.$confirm('距离开始学习时间已不到5小时,需扣除您百分之50的费用，您确定取消预约？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.putReason('formValidate');
-        }).catch(() => {
+    open() {
+      this.$confirm(
+        "距离开始学习时间已不到5小时,需扣除您百分之50的费用，您确定取消预约？",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          this.putReason("formValidate");
+        })
+        .catch(() => {
           this.$message({
-            type: 'info',
-            message: '取消该操作'
-          });          
+            type: "info",
+            message: "取消该操作",
+          });
         });
-      },
+    },
     putReason(name) {
       this.$nextTick(() => {
         this.$refs[name].validate((valid) => {
@@ -404,6 +342,7 @@ export default {
       //   });
       // })
     },
+    search() {},
     handlePageSizeChange(pageSize) {
       this.pageSize = pageSize;
       this.search(1);
@@ -472,6 +411,14 @@ export default {
         let data = res.items;
         _t.allData = data;
         _t.allTotal = res.total;
+
+        _t.allData.forEach((element) => {
+          if (element.haveClock == true) {
+            element.haveClock = "已打卡";
+          } else {
+            element.haveClock = "尚未打卡";
+          }
+        });
       });
     },
 
@@ -573,6 +520,13 @@ export default {
       post("reservation/findFinishByUser", param, (res) => {
         let data = res.items;
         _t.successData = data;
+        _t.successData.forEach((element) => {
+          if (element.haveClock == true) {
+            element.haveClock = "已打卡";
+          } else {
+            element.haveClock = "未打卡";
+          }
+        });
         _t.successTotal = res.total;
       });
     },

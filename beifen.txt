@@ -1,0 +1,70 @@
+<el-tab-pane label="我的自习">
+            <el-row class="page">
+              <!--    搜索-->
+              <el-col :span="24">
+                <search
+                  style="width: 95%; margin: 10px auto"
+                  :search-items="searchItems"
+                  @on-search="searchBySearchItem3"
+                ></search>
+              </el-col>
+              <!--    按钮和分页-->
+              <el-col :span="24">
+                <div style="width: 95%; margin: 10px auto">
+                  <div class="pager-group">
+                    <el-pagination
+                      @size-change="handleSizeChange"
+                      @current-change="handleCurrentChange3"
+                      :current-page="page"
+                      :page-sizes="[10, 20, 30, 40]"
+                      :page-size="pageSize"
+                      layout="total, sizes, jumper, prev, next"
+                      :total="successTotal"
+                    >
+                    </el-pagination>
+                  </div>
+                </div>
+              </el-col>
+              <!--    表格-->
+              <el-col :span="24">
+                <el-table
+                  :data="successData"
+                  style="width: 95%; margin: 0 auto"
+                  @selection-change="handleSelectionChange"
+                  @row-dblclick="handleRowClick"
+                  @sort-change="handleSortChange"
+                >
+                  <el-table-column type="selection" width="55">
+                  </el-table-column>
+                  <el-table-column prop="seat.seatName" label="预约座位">
+                  </el-table-column>
+                  <el-table-column
+                    prop="seat.description"
+                    label="座位描述"
+                    sortable="custom"
+                  >
+                  </el-table-column>
+                  <el-table-column prop="bookDate" label="预约日期" sortable>
+                  </el-table-column>
+                  <el-table-column
+                    prop="startTime"
+                    label="开始时间"
+                    sortable="custom"
+                  >
+                  </el-table-column>
+                  <el-table-column
+                    prop="endTime"
+                    label="结束时间"
+                    sortable="custom"
+                  >
+                  </el-table-column>
+                  <el-table-column
+                    prop="haveClock"
+                    label="是否打卡"
+                    sortable="custom"
+                  >
+                  </el-table-column>
+                </el-table>
+              </el-col>
+            </el-row>
+          </el-tab-pane>
