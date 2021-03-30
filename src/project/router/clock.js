@@ -14,7 +14,7 @@
               path:'/index'
             },
             {
-              name:'打卡记录',
+              name:'套餐管理',
               path:'/clock/list'
             }
           ]

@@ -150,7 +150,7 @@ export default {
           type: "string",
         },
         {
-          name: "电话",
+          name: "自习座位",
           key: "phone",
           type: "string",
         },

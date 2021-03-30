@@ -37,7 +37,7 @@
                     prop="endTime"
                     label="签退时间"
                   ></el-table-column>
-                  <el-table-column prop="length" label="学习时长">
+                  <el-table-column prop="length" label="学习时长(分钟)">
                   </el-table-column>
                   <el-table-column prop="seatName" label="座位">
                   </el-table-column>

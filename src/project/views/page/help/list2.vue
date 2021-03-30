@@ -1,16 +1,18 @@
 <template>
   <el-row class="page">
     <!--    搜索-->
-    <el-col :span="24">
-      <search
-        style="width: 95%; margin: 10px auto"
-        :search-items="searchItems"
-        @on-search="searchBySearchItem"
-      ></search>
-    </el-col>
+    <el-col :span="24"> </el-col>
     <!--    按钮和分页-->
     <el-col :span="24">
-
+      <div style="width: 95%; margin: 10px auto">
+        <el-button
+          style="background: rgb(0, 161, 108); border: none"
+          icon="el-icon-plus"
+          type="primary"
+          @click="toCreate"
+          >设置套餐</el-button
+        >
+      </div>
     </el-col>
     <!--    表格-->
     <el-col :span="24">
@@ -22,21 +24,10 @@
         @sort-change="handleSortChange"
       >
         <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column label="区域名称">
-          <template slot-scope="scope">
-            <el-button
-              @click.native.prevent="toDetail(scope.row)"
-              type="text"
-              size="small"
-            >
-              {{ scope.row.areaName }}
-            </el-button>
-          </template>
+        <el-table-column label="套餐名称" prop="name"> </el-table-column>
+        <el-table-column prop="price" label="价格(元)"> </el-table-column>
+        <el-table-column prop="description" label="使用说明">
         </el-table-column>
-        <el-table-column prop="totalSeat" label="座位总数"> </el-table-column>
-        <el-table-column prop="remainingSeat" label="剩余座位">
-        </el-table-column>
-        <el-table-column prop="amount" label="价格(元/时)"> </el-table-column>
       </el-table>
     </el-col>
     <!--    新建-->
@@ -90,24 +81,7 @@ export default {
       page: 1,
       total: 0,
       extraParam: {},
-      searchItems: [
-        // {
-        //   name: "文章名称",
-        //   key: "title",
-        //   type: "string",
-        // },
-        {
-          name: "查询日期",
-          key: "searchTime",
-          type: "date",
-        },
-        {
-          name: "选择时间段",
-          key: "timeAfter",
-          type: "time",
-        },
-
-      ],
+      searchItems: [],
     };
   },
 
@@ -122,6 +96,30 @@ export default {
     IEdit,
   },
   methods: {
+    // objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+    //   // console.log('jsjsjsjsjs')
+    //   // console.log(rowIndex) 0
+    //   // console.log(columnIndex);  1
+    //   if (columnIndex === 1 || columnIndex === 0 || columnIndex === 2) {
+    //     let l = 0;
+    //     if(rowIndex == 0) {l=3}
+    //     if(rowIndex == 1) {l=2}
+    //     const _row = l
+    //     // console.log(_row)
+    //     const _col = _row > 0 ? 1 : 0;
+    //     return {
+    //       rowspan: _row,
+    //       colspan: _col,
+    //     };
+    //   }
+
+    //   //  else {
+    //   //   return {
+    //   //     rowspan: 1,
+    //   //     colspan: 1,
+    //   //   };
+    //   // }
+    // },
     findById() {
       findById({ storeId: this.id }, (res) => {
         this.data = res;
@@ -223,17 +221,9 @@ export default {
       this.search(1);
     },
     search(page) {
-      let _t = this;
-    
-      let param = {
-        searchTime: _t.extraParam.searchTime,
-        timeAfter: _t.extraParam.timeAfter,
-      };
-
-      search(param, (res) => {
-        let data = res;
-        _t.data = data;
-      });
+      post('/package/search',{},(res)=>{
+        this.data = res;
+      })
     },
 
     handleTransportSelectList(list) {
@@ -317,9 +307,9 @@ export default {
       this.editProps.visible = true;
     },
     toDetail(row) {
-      console.log(this.extraParam)
+      console.log(this.extraParam);
       let _t = this;
-      this.$router.push({ path: `show/` + row.areaId});
+      this.$router.push({ path: `show/` + row.areaId });
     },
     handleCurrentChange(val) {
       this.page = val;

@@ -27,7 +27,7 @@
                   v-model="formValidate.username"
                   placeholder="请输入用户名"
                 >
-                  <i class="el-icon-user-solid" slot="prefix" />
+                  <i class="el-icon-user-solid" slot="prefix"/>
                 </el-input>
               </el-form-item>
               <el-form-item :label="$t('message.password')" prop="password">

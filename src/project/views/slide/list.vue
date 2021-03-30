@@ -37,11 +37,65 @@
         <el-button icon="el-icon-refresh" @click="onReset">重置</el-button>
       </el-col>
     </el-row>
-    <div
-      id="pieReport"
-      style="width: 100%; height: 500px; margin-top: 25px"
-    ></div>
-    <div id="main" style="width: 85%; height: 500px; margin-top: 35px"></div>
+
+    <el-col :span="12">
+      <div class="grid-content bg-purple">
+        <div
+          id="pieReport"
+          style="width: 50%; height: 400px; margin-top: 25px"
+        ></div>
+      </div>
+    </el-col>
+
+    <el-col :span="12">
+      <div class="grid-content bg-purple-light">
+        <div
+          id="main"
+          style="width: 60%; height: 400px; margin-top: 40px"
+        ></div>
+      </div>
+    </el-col>
+
+    <el-row>
+      <el-col :span="20">
+        <div class="grid-content bg-purple-dark">
+          <div
+            style="
+              width: 30%;
+              margin: auto;
+              height: 30px;
+              font-size: 20px;
+              color: #483d8b;
+              text-align: center;
+            "
+          >
+            当月用户消费排行榜前10
+          </div>
+
+          <el-table :data="data" style="width: 95%; margin-top: 15px">
+            <el-table-column type="selection" width="55"> </el-table-column>
+            <el-table-column prop="username" label="用户名"> </el-table-column>
+            <el-table-column prop="amount" label="消费金额" sortable="true">
+            </el-table-column>
+            <el-table-column prop="number" label="预定次数"> </el-table-column>
+            <el-table-column prop="areaNameLike" label="最喜爱区域">
+            </el-table-column>
+            <el-table-column
+              fixed="right"
+              align="center"
+              label="奖励操作"
+              width="200"
+            >
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="given(scope.row)"
+                  >奖励</el-button
+                >
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 <script>
@@ -58,6 +112,7 @@ export default {
 
   data() {
     return {
+      sort: { asc: [], desc: [] },
       monthDate: [],
       options1: [
         {
@@ -102,8 +157,9 @@ export default {
 
       mychart: "",
       optionData1: [],
-      optionName:[],
+      optionName: [],
       searchItems: [],
+      data: [],
     };
   },
   created() {},
@@ -114,6 +170,16 @@ export default {
     IEdit,
   },
   methods: {
+    searchLeaderBoard() {
+      let param = {
+        year: this.valuetype1,
+        month: this.valuetype2,
+      };
+      post("/record/leaderBoard", param, (res) => {
+        this.data = res;
+      });
+    },
+    given(row) {},
     onSearch() {
       this.$emit("on-search", this.keywords); // handle seach
       console.log(this.valuetype1);
@@ -122,14 +188,15 @@ export default {
         year: this.valuetype1,
         month: this.valuetype2,
       };
+      this.searchLeaderBoard();
       post("/area/searchMoneyByAreaAndDate", param, (res) => {
         let optionDataTemp = [];
         let optionNameTemp = [];
         let i = 0;
         this.opinionData = res.areas;
-        res.incomes.forEach(element => {
-            optionDataTemp.push(element.income);
-            optionNameTemp.push(element.month);
+        res.incomes.forEach((element) => {
+          optionDataTemp.push(element.income);
+          optionNameTemp.push(element.month);
         });
         this.optionData1 = optionDataTemp;
         this.optionName = optionNameTemp;
@@ -152,12 +219,9 @@ export default {
     },
     drawPie(id) {
       this.charts = echarts.init(document.getElementById(id));
-      console.log('*******')
-      console.log(this.opinionData)
-      console.log(')))))')
       this.charts.setOption({
         title: {
-          text: "当月各区域自习室收入状况",
+          text: "当月各区域自习室预定订单量",
         },
         tooltip: {
           trigger: "item",
@@ -253,6 +317,7 @@ export default {
     this.drawPie("pieReport");
     this.drawZhu("main");
     this.setYear();
+    this.searchLeaderBoard();
   },
 };
 </script>
