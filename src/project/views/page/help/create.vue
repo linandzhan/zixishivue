@@ -72,6 +72,22 @@
         ></el-cascader>
       </el-form-item>
 
+      <el-form-item label="是否使用套餐卡预定" prop="selectPackage">
+        <el-select
+          v-model="formValidate.selectPackage"
+          placeholder="请选择"
+          @change="selectIs"
+        >
+          <el-option
+            v-for="item in yesNo"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
+
       <el-form-item label="需扣费" prop="money">
         <el-input
           v-model="formValidate.money"
@@ -79,18 +95,6 @@
           :disabled="true"
         ></el-input>
       </el-form-item>
-
-      <!-- <el-form-item label="确定以上信息" prop="isTrue">
-        <el-select v-model="value" placeholder="请选择">
-          <el-option
-            v-for="item in optionsTrue"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-      </el-form-item> -->
     </el-form>
     <!--    </div>-->
 
@@ -109,6 +113,7 @@ import Editor from "@/framework/components/editor";
 import { save } from "@/project/service/page"; //接口
 import Emitter from "@/framework/mixins/emitter";
 import { post } from "@/framework/http/request";
+import { Notification } from "element-ui";
 
 export default {
   mixins: [Emitter],
@@ -129,17 +134,17 @@ export default {
   },
   data() {
     return {
+      yesNo: [
+        {
+          label: "是",
+          value: true,
+        },
+        {
+          label: "否",
+          value: false,
+        },
+      ],
       options: [],
-      // optionsTrue:[
-      //   {
-      //     value:"确定",
-      //     label:'确定'
-      //   },
-      //   {
-      //     value:'不确定',
-      //     label:'不确定'
-      //   }
-      // ],
       categoryList: [],
       radio: "1", //1是启用的意思
       show: false,
@@ -158,7 +163,37 @@ export default {
   },
   computed: {},
   methods: {
+    selectIs() {
+      if (this.options.length <= 0) {
+        Notification({
+          title: "警告",
+          message: `需要选择开始和结束时间，以准确计算套餐扣费情况`,
+          type: "warning",
+        });
+        return;
+      }
+      if (this.formValidate.selectPackage) {
+        let param = {
+          isSelectPackage: this.formValidate.selectPackage,
+          start: this.formValidate.startTime,
+          end: this.formValidate.endTime,
+        };
+        post("/packageOrder/judgetPackage", param, (res) => {
+          this.$alert("<strong>"+res.judget+"</strong>", "套餐推荐使用", {
+            dangerouslyUseHTMLString: true,
+          });
+          this.formValidate.money = res.price + "元";
+          this.formValidate.unit = res.unit;
+        });
+      } else {
+        this.culculateMoney();
+      }
+    },
     culculateMoney() {
+      if (this.formValidate.selectPackage) {
+        return;
+      }
+
       let startHour = parseInt(this.formValidate.startTime.substring(0, 2));
       let endHour = parseInt(this.formValidate.endTime.substring(0, 2));
       let countHour = endHour - startHour;
@@ -169,7 +204,7 @@ export default {
       }
       post("/seat/get", { id: this.formValidate.seat[1] }, (res) => {
         this.formValidate.money = res.area.amount * countHour + "元";
-        console.log(this.formValidate.money);
+        this.formValidate = Object.assign({}, this.formValidate);
       });
     },
     test() {
@@ -205,6 +240,7 @@ export default {
               areaId: this.formValidate.seat[0],
               seatId: this.formValidate.seat[1],
               money: this.formValidate.money,
+              unit:this.formValidate.unit,
             };
             save(param, (res) => {
               this.$message.success("添加成功");

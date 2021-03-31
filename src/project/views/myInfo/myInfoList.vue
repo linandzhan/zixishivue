@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row>
+    
       <el-col :span="6">
         <el-card class="box-card">
           <div slot="header">
@@ -19,6 +19,7 @@
           <div class="text">
             <span class="text_label">注册时间：{{ user.createTime }}</span>
           </div>
+
           <div class="text">
             <span class="text_label">余额：{{ user.balance }}元</span>
             &nbsp&nbsp&nbsp&nbsp
@@ -33,6 +34,35 @@
             >
           </div>
         </el-card>
+
+
+              <el-card class="box-card">
+        <div slot="header">
+          <span>我的套餐</span>
+          &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+          <span>
+            <el-button
+              style="background: rgb(0, 161, 108); border: none"
+              icon="el-icon-plus"
+              type="primary"
+              @click="buyPackage"
+              >购买套餐
+            </el-button></span
+          >
+        </div>
+        <div class="text" v-if="packageMessage.deadLineYear != null">
+          <span class="text_label">年卡：{{ packageMessage.deadLineYear }}</span>
+        </div>
+        <div class="text" v-if="packageMessage.deadLineMonth != null">
+          <span class="text_label">月卡：{{ packageMessage.deadLineMonth }}</span>
+        </div>
+        <div class="text" v-if="packageMessage.dayTime != null">
+          <span class="text_label">日卡：{{ packageMessage.dayTime }}</span>
+        </div>
+        <div class="text" v-if="packageMessage.remainHourMinute != null">
+          <span class="text_label">小时储值：{{ packageMessage.remainHourMinute }}</span>
+        </div>
+      </el-card>
       </el-col>
 
       <el-col :span="18">
@@ -62,39 +92,10 @@
           </el-table>
         </el-card>
       </el-col>
-    </el-row>
+   
 
     <el-col :span="6">
-      <el-card class="box-card">
-        <div slot="header">
-          <span>我的套餐</span>
-          &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-          <span>
-            <el-button
-              style="background: rgb(0, 161, 108); border: none"
-              icon="el-icon-plus"
-              type="primary"
-              @click="buyPackage"
-              >购买套餐
-            </el-button></span
-          >
-        </div>
-        <div class="text">
-          <span class="text_label">年套餐：{{ user.username }}</span>
-        </div>
-        <div class="text">
-          <span class="text_label">月套餐：{{ user.username }}</span>
-        </div>
-        <div class="text">
-          <span class="text_label">日套餐：{{ user.username }}</span>
-        </div>
-        <div class="text">
-          <span class="text_label">小时储值：{{ user.username }}</span>
-        </div>
-        <div class="text">
-          <span class="text_label">新人优惠套餐{{ user.username }}</span>
-        </div>
-      </el-card>
+
     </el-col>
 
     <el-dialog
@@ -132,7 +133,7 @@
         :rules="ruleBuyForm"
         label-width="150px"
       >
-      <!-- @change="getDescription" -->
+        <!-- @change="getDescription" -->
         <el-form-item label="选择套餐" prop="package">
           <el-select
             v-model="buyForm.package"
@@ -153,24 +154,27 @@
               </el-option>
             </el-option-group>
           </el-select>
-   
         </el-form-item>
         <el-form-item label="套餐说明" prop="description">
           <el-input
             type="textarea"
             :autosize="{ minRows: 4, maxRows: 7 }"
             placeholder="套餐说明"
-            :disabled=true
+            :disabled="true"
             v-model="buyForm.description"
           >
           </el-input>
-         </el-form-item>
+        </el-form-item>
 
         <el-form-item label="需付价格" prop="price">
-                        <el-input v-model="buyForm.price" placeholder="需付价格" :disabled=true>
+          <el-input
+            v-model="buyForm.price"
+            placeholder="需付价格"
+            :disabled="true"
+          >
           </el-input
           >元
-         </el-form-item>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="buy('buyForm')">确 定</el-button>
@@ -198,12 +202,10 @@ export default {
           },
         ],
       },
-      buyForm: {
-      },
+      packageMessage:{},
+      buyForm: {},
       user: {},
-      formValidate: {
-        
-      },
+      formValidate: {},
       rechargeVisible: false,
       page: 1,
       total: 0,
@@ -288,17 +290,17 @@ export default {
   },
   methods: {
     getDescription() {
-      let param  = {
-        id:this.buyForm.package
-      }
-     
-      post('/package/get',param,(res)=>{
+      let param = {
+        id: this.buyForm.package,
+      };
+
+      post("/package/get", param, (res) => {
         this.buyForm.description = res.description;
-        this.buyForm.price  = res.price
-         this.buyForm = Object.assign({},this.buyForm)
-         console.log(this.buyForm.description)
-         console.log(this.buyForm.price)
-      })
+        this.buyForm.price = res.price;
+        this.buyForm = Object.assign({}, this.buyForm);
+        console.log(this.buyForm.description);
+        console.log(this.buyForm.price);
+      });
 
       // console.log(this.)
     },
@@ -306,7 +308,12 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           post("/packageOrder/save", this.buyForm, (res) => {
-             
+            this.$message.success("购买套成功");
+            this.$emit("on-save-success");
+            this.buyPackageVisible = false;
+            this.getUserInfo();
+            this.search(1);
+             this.searchPackageMessage();
           });
         }
       });
@@ -366,19 +373,16 @@ export default {
         this.total = res.total;
       });
     },
-    // test() {
-    //   let param  = {
-    //     page :1
-    //   }
-    //   post("/record/param",param,(res)=>{
-
-    //   })
-
-    // }
+    searchPackageMessage() {
+      post('/packageOrder/findByUser',{},(res)=>{
+          this.packageMessage  = res;
+      })
+    }
   },
   mounted() {
     this.getUserInfo();
     this.search(1);
+    this.searchPackageMessage();
     // this.test();
   },
   created() {},
