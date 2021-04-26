@@ -72,19 +72,6 @@
             >
               禁用
             </el-dropdown-item>
-            <!-- <el-dropdown-item
-              icon="el-icon-edit"
-              command="编辑"
-              :disabled="selectList.length !== 1"
-              :style="
-                selectList.length !== 1
-                  ? { color: 'rgba(255,255,255,0.4)' }
-                  : { color: '#fff' }
-              "
-              @click.stop="handleEdit"
-            >
-              编辑
-            </el-dropdown-item> -->
           </el-dropdown-menu>
         </el-dropdown>
         <div class="pager-group">
@@ -125,8 +112,6 @@
         <el-table-column prop="phone" label="手机号"> </el-table-column>
         <el-table-column prop="createTime" label="创建时间" sortable>
         </el-table-column>
-        <!-- <el-table-column prop="role" label="角色" sortable>
-        </el-table-column> -->
         <el-table-column prop="enabled" label="状态"> </el-table-column>
         <el-table-column fixed="right" align="center" label="操作" width="200">
           <template slot-scope="scope">

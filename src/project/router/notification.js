@@ -32,7 +32,7 @@ const notification = {
             path:'/index'
           },
           {
-            name:'广告管理',
+            name:'收支统计',
             path:'/notification/list'
           },
           {

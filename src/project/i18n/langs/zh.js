@@ -1,7 +1,7 @@
 import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 const zh = {
   message: {
-    'projectName':'lychee',
+    'projectName':'自习室管理系统',
     'username': '用户名',
     'password': '密码',
     'signIn': '登录',

@@ -129,7 +129,7 @@ export default {
     return {
       model: "user",
       activeName: "first",
-      projectName: "lychee后台管理系统",
+      projectName: "共享自习室管理系统",
       formValidate: {
         username: "王柳",
         password: "123456",

@@ -11,11 +11,16 @@
 </script>
 
 <style lang="less" scoped>
-  .page {
+.page {
+  position: relative;
+  width: 80%;
+  background-image: url(../../assets/img/login-bg.jpg);
+  background-size: 100%;
+  background-repeat: no-repeat;
   .welcome {
-    margin-top: 200px;
-    font-size: 30px;
+    margin-top: 100px;
+    font-size: 50px;
     color: #333333;
   }
-  }
+}
 </style>

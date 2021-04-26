@@ -100,7 +100,7 @@ const page = {
             path: '/page/help/list'
           },
           {
-            name: '帮助中心文章详情',
+            name: '座位详情',
           },
         ]
       },

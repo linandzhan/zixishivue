@@ -38,20 +38,20 @@
       </el-col>
     </el-row>
 
-    <el-col :span="12">
+    <el-col :span="14">
       <div class="grid-content bg-purple">
         <div
           id="pieReport"
-          style="width: 50%; height: 400px; margin-top: 25px"
+          style="width: 70%; height: 400px; margin-top: 25px"
         ></div>
       </div>
     </el-col>
 
-    <el-col :span="12">
+    <el-col :span="10">
       <div class="grid-content bg-purple-light">
         <div
           id="main"
-          style="width: 60%; height: 400px; margin-top: 40px"
+          style="width: 70%; height: 400px; margin-top: 40px"
         ></div>
       </div>
     </el-col>
@@ -83,7 +83,7 @@
             <el-table-column
               fixed="right"
               align="center"
-              label="奖励操作"
+              label="奖励机制"
               width="200"
             >
               <template slot-scope="scope">
@@ -139,9 +139,41 @@ export default {
           value: 2 + "月",
           label: 2 + "月",
         },
-        {
+                {
           value: 3 + "月",
           label: 3 + "月",
+        },
+        {
+          value: 4 + "月",
+          label: 4 + "月",
+        },
+                {
+          value: 5 + "月",
+          label: 5 + "月",
+        },
+                {
+          value: 6 + "月",
+          label: 6 + "月",
+        },
+                {
+          value: 7 + "月",
+          label: 7 + "月",
+        },
+                {
+          value: 8 + "月",
+          label: 8 + "月",
+        },
+                {
+          value: 9 + "月",
+          label: 9 + "月",
+        },
+                {
+          value: 10 + "月",
+          label: 10 + "月",
+        },
+                {
+          value: 11 + "月",
+          label: 11 + "月",
         },
         {
           value: 12 + "月",
